@@ -1,0 +1,18 @@
+# This action will add your issue to our Product Defect Project
+name: Add new issue to main project
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs: 
+  add-to-project:
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@main
+        with:
+          project-url: https://github.com/orgs/sparkfun/projects/19
+          github-token: ${{ secrets.DEFECT_ADD_TO_PROJECT }}
+
