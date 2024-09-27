@@ -99,6 +99,7 @@ void i2c_init(i2c_device_t *i2c_device)
     i2c_device->instance = &Wire;
     i2c_device->instance->begin();
     i2c_device->instance->setClock(I2C_CLK_FREQ);
+    i2c_device->instance->setBufferSize(512);
 }
 
 
@@ -169,7 +170,10 @@ int8_t combridge_i2c_read_16bit(bmv080_sercom_handle_t handle, uint16_t header, 
     while(i2c_device->instance->available() && (payload_index < (payload_length * 2) )) 
     {
         payload_byte[payload_index++] = i2c_device->instance->read();    
+        //Serial.print(".");
     }
+    //Serial.print("payload_length");
+    //Serial.println(payload_length);
 
     if(payload_index != (payload_length * 2))
     {

@@ -35,25 +35,19 @@ Bmv080 bmv080;
 
 SET_LOOP_TASK_STACK_SIZE(60 * 1024);  // 60KB
 
-int hi2c;
+extern "C" bmv080_handle_t bmv080_handle = NULL;
 
 /* A unique handle is used to address a BMV080 sensor unit */
-static bmv080_handle_t bmv080_handle = NULL;
+//static bmv080_handle_t bmv080_handle = NULL;
 
 /* handle for print function to be used in interrupt service routine */
-static print_function_t print_handle = NULL; 
+//static print_function_t print_handle = NULL; 
 
-volatile uint32_t data_ready_callback_count = 0;
+//volatile uint32_t data_ready_callback_count = 0;
 
-void print_to_serial(const char *format, ...);
+//void print_to_serial(const char *format, ...);
 
-/* Private variables ---------------------------------------------------------*/
-spi_device_t spi_device = {};
 i2c_device_t i2c_device = {};
-
-bmv080_status_code_t bmv080_current_status = E_BMV080_OK;
-
-volatile bmv080_output_t bmv080_output;
 
 #define IRQ_Pin 14
 
@@ -61,46 +55,39 @@ bool int_flag = false;
 
 void setup()
 {
-    // Start serial
-    Serial.begin(115200);
+    // // Start serial
+    // Serial.begin(115200);
 
-    while(!Serial) delay(10); // Wait for Serial to become available.
-    // Necessary for boards with native USB (like the SAMD51 Thing+).
-    // For a final version of a project that does not need serial debug (or a USB cable plugged in),
-    // Comment out this while loop, or it will prevent the remaining code from running.
+    // while(!Serial) delay(10); // Wait for Serial to become available.
+    // // Necessary for boards with native USB (like the SAMD51 Thing+).
+    // // For a final version of a project that does not need serial debug (or a USB cable plugged in),
+    // // Comment out this while loop, or it will prevent the remaining code from running.
 
-    Serial.println();
-    Serial.println("BMV080 Example 1 - Basic Readings");
+    // Serial.println();
+    // Serial.println("BMV080 Example 1 - Basic Readings");
 
-    Wire.begin();
+    // Wire.begin();
 
-    if (bmv080.begin(BMV080_ADDR, Wire, BMV080_IRQ) == false) {
-        Serial.println("BMV080 not detected at default I2C address. Check your jumpers and the hookup guide. Freezing...");
-        while (1)
-        ;
-    }
-    Serial.println("BMV080 found!");
+    // if (bmv080.begin(BMV080_ADDR, Wire, BMV080_IRQ) == false) {
+    //     Serial.println("BMV080 not detected at default I2C address. Check your jumpers and the hookup guide. Freezing...");
+    //     while (1)
+    //     ;
+    // }
+    // Serial.println("BMV080 found!");
 
     // Wire.setClock(400000); //Increase I2C data rate to 400kHz
-
-    // TODO: Add other setup code if needed. Most setup should be done in begin()
-
     
     Serial.begin(115200);
     Serial.println("Starting BMV080 example...");
 
-        /* Communication interface initialization */
-    spi_init(&spi_device);
+    /* Communication interface initialization */
+
     i2c_init(&i2c_device);
     
     setup_sensor();
 
-    print_handle = (const print_function_t)print_to_serial;
-
-    enable_external_interrupt((bool)true); // Use of hardware interrupt of the BMV080 sensor unit can be used as trigger.
-
     /* Start particle measurement in continuous mode */
-    bmv080_current_status = bmv080_start_continuous_measurement(bmv080_handle);
+    bmv080_status_code_t bmv080_current_status = bmv080_start_continuous_measurement(bmv080_handle);
 
     if (bmv080_current_status != E_BMV080_OK)
     {
@@ -110,88 +97,25 @@ void setup()
     {
         printf("BMV080 continuous measurement started successfully\n");
     }
-
-    uint32_t sensor_measurement_duration_seconds = 60;
-    data_ready_callback_count = 0;
-
-    printf("Particle measurement started in continuous mode for %d seconds \r\n", sensor_measurement_duration_seconds);
 }
 
 void loop()
 {
-    delay(100);
-    if(int_flag == true)
+    if(bmv080.dataAvailable())
     {
-        int_flag = false;
-        do{
-            bmv080_service_routine();
-        } while (digitalRead(IRQ_Pin) == 0);
-    }
-}
+        float pm25 = bmv080.getPM25();
 
-/* Private functions ---------------------------------------------------------*/
-static void enable_external_interrupt(bool enable)
-{
-      int checkPin = digitalPinToInterrupt(IRQ_Pin);
+        Serial.print(pm25);
 
-  if (checkPin == -1) {
-    Serial.println("Not a valid interrupt pin!");
-  } else {
-    Serial.println("Valid interrupt pin.");
-  }
-
-    if(enable)
-    {    /* Enabel external interrupt */
-        attachInterrupt(digitalPinToInterrupt(IRQ_Pin), gpio_isr_handler, FALLING );  
-    }else
-    {    /* Disable external interrupt */
-        detachInterrupt(digitalPinToInterrupt(IRQ_Pin) );
-    }
-}
-
-void gpio_isr_handler(void)
-{
-    int_flag = true;
-}
-
-
-/* Custom function for consuming sensor readings */
-void use_sensor_output(bmv080_output_t bmv080_output, void* callback_parameters)
-{
-    data_ready_callback_count += 1;
-    print_function_t print = (print_function_t)callback_parameters;
-    
-    print("Runtime: %.2f s, PM2.5: %.0f ug/m^3, obstructed: %s, outside detection limits: %s\r\n",
-        bmv080_output.runtime_in_sec, bmv080_output.pm2_5, (bmv080_output.is_obstructed ? "yes" : "no"), (bmv080_output.is_outside_detection_limits ? "yes" : "no"));
-}
-
-void print_to_serial(const char *format, ...) 
-{
-    char print_buffer[1024];
-    va_list args;
-    va_start(args, format);
-    vsnprintf(print_buffer, sizeof(print_buffer), format, args);
-    va_end(args);
-    Serial.print(print_buffer);
-}
-
-void bmv080_service_routine(void)
-{       
-        if ( (bmv080_handle != NULL) && (print_handle != NULL))
+        if(bmv080.getIsObstructed() == true)
         {
-            //Serial.println("s");
-            /* The interrupt is served by the BMV080 sensor driver */
-            bmv080_status_code_t bmv080_current_status = bmv080_serve_interrupt(bmv080_handle, (bmv080_callback_data_ready_t)use_sensor_output, (void*)print_handle);
-            if (bmv080_current_status != E_BMV080_OK)
-            {
-                printf("Fetching measurement data failed with BMV080 status %d\r\n", (int32_t)bmv080_current_status);
-            }
+            Serial.print("\tObstructed");
         }
+
+        Serial.println();
+    }
+    delay(100);
 }
-
-
-
-
 
 void setup_sensor(void)
 {
@@ -202,7 +126,7 @@ void setup_sensor(void)
     char git_hash[12];
     int32_t commits_ahead = 0;
 
-    bmv080_current_status = bmv080_get_driver_version(&major, &minor, &patch, git_hash, &commits_ahead);
+    bmv080_status_code_t bmv080_current_status = bmv080_get_driver_version(&major, &minor, &patch, git_hash, &commits_ahead);
 
     if (bmv080_current_status != E_BMV080_OK)
     {
@@ -227,6 +151,8 @@ void setup_sensor(void)
     {
         printf("BMV080 handle opened successfully\n");
     }
+
+    bmv080.setHandle(bmv080_handle);
 
     /* Reset the BMV080 sensor unit */
     bmv080_current_status = bmv080_reset(bmv080_handle);
