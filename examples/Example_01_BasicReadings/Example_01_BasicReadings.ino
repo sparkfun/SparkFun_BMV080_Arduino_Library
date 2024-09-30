@@ -29,47 +29,38 @@
 #include <Wire.h>
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 
-Bmv080 bmv080;
-#define BMV080_IRQ  14 // The BMV080 interrupt pin
+Bmv080 bmv080; // Create an instance of the BMV080 class
 #define BMV080_ADDR 0x57  // SparkFun BMV080 Breakout defaults to 0x57
 
-i2c_device_t i2c_device = {};
-
-#define IRQ_Pin 14
-
-bool int_flag = false;
+i2c_device_t i2c_device = {}; // I2C device struct instance for Bosch API
 
 void setup()
 {
-    // // Start serial
-    // Serial.begin(115200);
+    Serial.begin(115200);
 
-    // while(!Serial) delay(10); // Wait for Serial to become available.
-    // // Necessary for boards with native USB (like the SAMD51 Thing+).
-    // // For a final version of a project that does not need serial debug (or a USB cable plugged in),
-    // // Comment out this while loop, or it will prevent the remaining code from running.
+    while(!Serial) delay(10); // Wait for Serial to become available.
+    // Necessary for boards with native USB (like the SAMD51 Thing+).
+    // For a final version of a project that does not need serial debug (or a USB cable plugged in),
+    // Comment out this while loop, or it will prevent the remaining code from running.
 
-    // Serial.println();
-    // Serial.println("BMV080 Example 1 - Basic Readings");
+    Serial.println();
+    Serial.println("BMV080 Example 1 - Basic Readings");
 
-    // Wire.begin();
+    Wire.begin();
 
-    // if (bmv080.begin(BMV080_ADDR, Wire, BMV080_IRQ) == false) {
-    //     Serial.println("BMV080 not detected at default I2C address. Check your jumpers and the hookup guide. Freezing...");
-    //     while (1)
-    //     ;
-    // }
-    // Serial.println("BMV080 found!");
+    if (bmv080.begin(BMV080_ADDR, Wire) == false) {
+        Serial.println("BMV080 not detected at default I2C address. Check your jumpers and the hookup guide. Freezing...");
+        while (1)
+        ;
+    }
+    Serial.println("BMV080 found!");
 
     // Wire.setClock(400000); //Increase I2C data rate to 400kHz
-    
-    Serial.begin(115200);
-    Serial.println("Starting BMV080 example...");
 
     /* Communication interface initialization */
-
     i2c_init(&i2c_device);
 
+    /* Initialize the Sensor (read driver, open, reset, id etc.)*/
     bmv080.init(&i2c_device);
 
     /* Set the sensor mode to continuous mode */

@@ -75,30 +75,35 @@ void bmv080_service_routine(const bmv080_handle_t handle, void* callback_paramet
 #endif
 
 
-// sfeTkError_t sfeBmv080::begin(sfeTkII2C *theBus)
-// {
-//     // Nullptr check
-//     if (theBus == nullptr)
-//         return kSTkErrFail;
+sfeTkError_t sfeBmv080::begin(sfeTkII2C *theBus)
+{
+    // Nullptr check
+    if (theBus == nullptr)
+        return kSTkErrFail;
 
-//     // Set bus pointer
-//     _theBus = theBus;
+    // Set bus pointer
+    _theBus = theBus;
 
-//     sfeTkError_t err;
-//     err = isConnected();
-//     // Check whether the ping was successful
-//     if (err != kSTkErrOk)
-//         return err;
+    // Set the bus pointer for the I2C device struct instance member
+    //_i2c_device.instance = theBus;
 
-//     // Done!
-//     return kSTkErrOk;
-// }
+    i2c_init(&_i2c_device);
 
-// sfeTkError_t sfeBmv080::isConnected()
-// {
-//     // Just ping the device address
-//     return _theBus->ping();
-// }
+    sfeTkError_t err;
+    err = isConnected();
+    // Check whether the ping was successful
+    if (err != kSTkErrOk)
+        return err;
+
+    // Done!
+    return kSTkErrOk;
+}
+
+sfeTkError_t sfeBmv080::isConnected()
+{
+    // Just ping the device address
+    return _theBus->ping();
+}
 
 float sfeBmv080::getPM25()
 {
@@ -142,18 +147,6 @@ bool sfeBmv080::setMode(uint8_t mode)
         return false;
     }
 }
-
-// void print_to_serial(const char *format, ...) 
-// {
-//     char print_buffer[1024];
-//     va_list args;
-//     va_start(args, format);
-//     vsnprintf(print_buffer, sizeof(print_buffer), format, args);
-//     va_end(args);
-//     Serial.print(print_buffer);
-// }
-
-//print_function_t print_handle = (const print_function_t)print_to_serial;
 
 bool sfeBmv080::dataAvailable()
 {

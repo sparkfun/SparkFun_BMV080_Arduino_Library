@@ -40,18 +40,18 @@ class sfeBmv080
 {
   public:
     /// @brief Default constructor
-    sfeBmv080()// : _theBus{nullptr}
+    sfeBmv080() : _theBus{nullptr}
     {
     }
 
-    // /// @brief Begins the Device
-    // /// @param theBus I2C bus to use for communication
-    // /// @return 0 for succuss, negative for errors, positive for warnings
-    // sfeTkError_t begin(sfeTkII2C *theBus = nullptr);
+    /// @brief Begins the Device
+    /// @param theBus I2C bus to use for communication
+    /// @return 0 for succuss, negative for errors, positive for warnings
+    sfeTkError_t begin(sfeTkII2C *theBus = nullptr);
 
-    // /// @brief Checks if the Device is connected
-    // /// @return 0 for succuss, negative for errors, positive for warnings
-    // sfeTkError_t isConnected();
+    /// @brief Checks if the Device is connected
+    /// @return 0 for succuss, negative for errors, positive for warnings
+    sfeTkError_t isConnected();
 
     /// @brief Initialize the sensor
     /// @details This function initializes the sensor and should be called 
@@ -99,14 +99,11 @@ class sfeBmv080
     /// @return True if new data is available, false otherwise
     bool dataAvailable();
 
-
-    
-
   private:
     bmv080_handle_t bmv080_handle_class = NULL;
     bool _dataAvailable = false;
     bmv080_output_t _sensorValue;
 
-  // protected:
-  //   sfeTkII2C *_theBus;
+  protected:
+    sfeTkII2C *_theBus;
 };
