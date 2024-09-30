@@ -61,13 +61,14 @@ class sfeBmv080
     void setSensorValue(bmv080_output_t bmv080_output);
     //void setSensorValue(float pm25);
     //void bmv080_service_routine(void);
-    bmv080_output_t _sensorValue;
+    
     bool dataAvailable();
 
     bmv080_handle_t bmv080_handle_class = NULL;
 
   private:
     bool _dataAvailable = false;
+    bmv080_output_t _sensorValue;
 
   // protected:
   //   sfeTkII2C *_theBus;

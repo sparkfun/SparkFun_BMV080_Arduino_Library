@@ -113,19 +113,10 @@ bool sfeBmv080::getIsObstructed()
 void sfeBmv080::setSensorValue(bmv080_output_t bmv080_output)
 {
     _dataAvailable = true;
-    // Serial.println("setSensorValue");
-    // Serial.println(pm25);
-
-    //_sensorValue.pm2_5 = pm25;
-
     _sensorValue.pm2_5 = bmv080_output.pm2_5;
-    
-    // _sensorValue.runtime_in_sec = bmv080_output.runtime_in_sec;
+    _sensorValue.runtime_in_sec = bmv080_output.runtime_in_sec;
     _sensorValue.is_obstructed = bmv080_output.is_obstructed;
-    // _sensorValue.is_outside_detection_limits = bmv080_output.is_outside_detection_limits;
-
-    // Serial.println("setSensorValue.pm2_5");
-    // Serial.println(_sensorValue.pm2_5);
+    _sensorValue.is_outside_detection_limits = bmv080_output.is_outside_detection_limits;
 }
 
 // void print_to_serial(const char *format, ...) 
