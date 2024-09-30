@@ -23,6 +23,7 @@
 
 #include "bmv080.h"
 #include "bmv080_defs.h"
+#include "combridge.h"
 
 #include <SparkFun_Toolkit.h>
 #include <stdint.h>
@@ -52,29 +53,57 @@ class sfeBmv080
     // /// @return 0 for succuss, negative for errors, positive for warnings
     // sfeTkError_t isConnected();
 
-    void setHandle(bmv080_handle_t handle);
+    /// @brief Initialize the sensor
+    /// @details This function initializes the sensor and should be called 
+    /// before any other functions. It calls Open, Reset, getDriverVersion, and getID.
+    /// @param i2c_device The I2C device to use
+    /// @return True if successful, false otherwise
+    bool init(i2c_device_t *i2c_device);
+
+    /// @brief Get the version information of this sensor driver.
+    /// @return True if successful, false otherwise
+    bool getDriverVersion();
+
+    /// @brief Open a sensor unit by initializing a new handle.
+    /// @param i2c_device The I2C device to use
+    /// @return True if successful, false otherwise
+    bool open(i2c_device_t *i2c_device);
+
+    /// @brief Reset the sensor
+    /// @return True if successful, false otherwise
+    bool reset();
+
+    /// @brief Get the ID of the sensor
+    /// @return True if successful, false otherwise
+    bool getID();
 
     /// @brief Set the mode of the sensor
-    /// @param mode // 0: Continuous mode, 1: Duty cycling mode
-    /// @return // True if successful, false otherwise
+    /// @param mode SFE_BMV080_MODE_CONTINUOUS, SFE_BMV080_MODE_DUTY_CYCLE
+    /// @return True if successful, false otherwise
     bool setMode(uint8_t mode);
 
+    /// @brief Get the PM2.5 value
+    /// @return The PM2.5 value as a float in ug/m3
     float getPM25();
+
+    /// @brief Get the obstruction status
+    /// @return True if obstructed, false otherwise
     bool getIsObstructed();
-    //void use_sensor_output(bmv080_output_t bmv080_output, void* callback_parameters);
-    //void bmv080_service_routine(void);
-    //bmv080_handle_t bmv080_handle = NULL;
-    //print_function_t print_handle = NULL; 
-    //void print_to_serial(const char *format, ...);
+
+
     void setSensorValue(bmv080_output_t bmv080_output);
-    //void setSensorValue(float pm25);
-    //void bmv080_service_routine(void);
     
+    /// @brief Check if new data is available
+    /// @details This function should be called in the main loop to check if new data is available
+    /// @details If new data is available, the data can be read using getPM25 and getIsObstructed
+    /// @return True if new data is available, false otherwise
     bool dataAvailable();
 
-    bmv080_handle_t bmv080_handle_class = NULL;
+
+    
 
   private:
+    bmv080_handle_t bmv080_handle_class = NULL;
     bool _dataAvailable = false;
     bmv080_output_t _sensorValue;
 

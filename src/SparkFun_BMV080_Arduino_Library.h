@@ -34,6 +34,10 @@
 #include <bmv080_defs.h>
 #include "combridge.h"
 
+// The BMV080 Bosch API requires a larger than usual stack size
+// In particular, bmv080_serve_interrupt is the culprit.
+SET_LOOP_TASK_STACK_SIZE(60 * 1024);  // 60KB
+
 class Bmv080 : public sfeBmv080
 {
   public:

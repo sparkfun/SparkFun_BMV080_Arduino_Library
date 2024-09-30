@@ -155,12 +155,6 @@ bool sfeBmv080::setMode(uint8_t mode)
 
 //print_function_t print_handle = (const print_function_t)print_to_serial;
 
-
-void sfeBmv080::setHandle(bmv080_handle_t handle)
-{
-    bmv080_handle_class = handle;
-}
-
 bool sfeBmv080::dataAvailable()
 {
     bmv080_service_routine(bmv080_handle_class, this);
@@ -171,4 +165,106 @@ bool sfeBmv080::dataAvailable()
     }
     else
         return false;
+}
+
+bool sfeBmv080::init(i2c_device_t *i2c_device)
+{
+    if(getDriverVersion() == false)
+    {
+        return false;
+    }
+
+    if(open(i2c_device) == false)
+    {
+        return false;
+    }
+
+    if(reset() == false)
+    {
+        return false;
+    }
+
+    if(getID() == false)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool sfeBmv080::open(i2c_device_t *i2c_device)
+{
+    //bmv080_handle_t bmv080_handle_temp = NULL;
+    //setHandle(bmv080_handle_temp);
+    bmv080_sercom_handle_t sercom_handle = (bmv080_sercom_handle_t)i2c_device;
+    bmv080_callback_read_t read = (const bmv080_callback_read_t)combridge_i2c_read_16bit;
+    bmv080_callback_write_t write = (const bmv080_callback_write_t)combridge_i2c_write_16bit;
+    bmv080_callback_delay_t delay_ms = (const bmv080_callback_delay_t)combridge_delay;
+
+    bmv080_status_code_t bmv080_current_status = bmv080_open(&bmv080_handle_class, sercom_handle, read, write, delay_ms);
+
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        Serial.println("BMV080 open failed");
+        return false;
+    }
+    else
+    {
+        Serial.println("BMV080 open successfully");
+        return true;
+    }
+}
+
+bool sfeBmv080::reset()
+{
+    bmv080_status_code_t bmv080_current_status = bmv080_reset(bmv080_handle_class);
+
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        Serial.println("BMV080 reset failed");
+        return false;
+    }
+    else
+    {
+        Serial.println("BMV080 reset successfully");
+        return true;
+    }
+}
+
+bool sfeBmv080::getDriverVersion()
+{
+    uint16_t major = 0;
+    uint16_t minor = 0;
+    uint16_t patch = 0;
+    char git_hash[12];
+    int32_t commits_ahead = 0;
+
+    bmv080_status_code_t bmv080_current_status = bmv080_get_driver_version(&major, &minor, &patch, git_hash, &commits_ahead);
+
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 driver version: %d\n", bmv080_current_status);
+        return false;
+    }
+    
+    printf("BMV080 driver version: %d.%d.%d\n", major, minor, patch);
+    return true;
+}
+
+bool sfeBmv080::getID()
+{
+    char id[13];
+    memset(id, 0x00, 13);
+    bmv080_status_code_t bmv080_current_status = bmv080_get_sensor_id(bmv080_handle_class, id);
+
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 sensor ID: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        printf("BMV080 sensor ID: %s\n", id);
+        return true;
+    }
 }
