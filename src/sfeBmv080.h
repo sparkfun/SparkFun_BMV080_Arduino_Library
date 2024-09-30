@@ -30,6 +30,9 @@
 #define SFE_BMV080_DEFAULT_ADDRESS 0x57
 #define SFE_BMV080_DEFAULT_IRQ_PIN 14
 
+#define SFE_BMV080_MODE_CONTINUOUS 0
+#define SFE_BMV080_MODE_DUTY_CYCLE 1
+
 
 
 class sfeBmv080
@@ -50,6 +53,11 @@ class sfeBmv080
     // sfeTkError_t isConnected();
 
     void setHandle(bmv080_handle_t handle);
+
+    /// @brief Set the mode of the sensor
+    /// @param mode // 0: Continuous mode, 1: Duty cycling mode
+    /// @return // True if successful, false otherwise
+    bool setMode(uint8_t mode);
 
     float getPM25();
     bool getIsObstructed();

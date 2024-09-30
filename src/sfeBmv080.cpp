@@ -119,6 +119,30 @@ void sfeBmv080::setSensorValue(bmv080_output_t bmv080_output)
     _sensorValue.is_outside_detection_limits = bmv080_output.is_outside_detection_limits;
 }
 
+bool sfeBmv080::setMode(uint8_t mode)
+{
+    bmv080_status_code_t bmv080_current_status; // return status from the Bosch API function
+
+    if(mode == SFE_BMV080_MODE_CONTINUOUS)
+    {
+        bmv080_current_status = bmv080_start_continuous_measurement(bmv080_handle_class);
+    }
+    else if(mode == SFE_BMV080_MODE_DUTY_CYCLE)
+    {
+        bmv080_current_status = bmv080_start_duty_cycling_measurement(bmv080_handle_class, (bmv080_callback_tick_t)millis, E_BMV080_DUTY_CYCLING_MODE_0);
+    }
+
+    // check if the mode was set correctly
+    if (bmv080_current_status == E_BMV080_OK)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 // void print_to_serial(const char *format, ...) 
 // {
 //     char print_buffer[1024];

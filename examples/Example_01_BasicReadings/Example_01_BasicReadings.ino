@@ -86,16 +86,14 @@ void setup()
     
     setup_sensor();
 
-    /* Start particle measurement in continuous mode */
-    bmv080_status_code_t bmv080_current_status = bmv080_start_continuous_measurement(bmv080_handle);
-
-    if (bmv080_current_status != E_BMV080_OK)
+    /* Set the sensor mode to continuous mode */
+    if(bmv080.setMode(SFE_BMV080_MODE_CONTINUOUS) == true)
     {
-        printf("Error starting BMV080 continuous measurement: %d\n", bmv080_current_status);
+        Serial.println("BMV080 set to continuous mode");
     }
     else
     {
-        printf("BMV080 continuous measurement started successfully\n");
+        Serial.println("Error setting BMV080 mode");
     }
 }
 
