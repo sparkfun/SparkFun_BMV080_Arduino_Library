@@ -56,17 +56,12 @@ void use_sensor_output(bmv080_output_t bmv080_output, void* callback_parameters)
 
 void bmv080_service_routine(const bmv080_handle_t handle, void* callback_parameters)
 {       
-        // if ( (bmv080_handle != NULL) && (print_handle != NULL))
-        // {
-            //Serial.print("s");
-            /* The interrupt is served by the BMV080 sensor driver */
-            bmv080_status_code_t bmv080_current_status = bmv080_serve_interrupt(handle, (bmv080_callback_data_ready_t)use_sensor_output, callback_parameters);
-            //bmv080_status_code_t bmv080_current_status = bmv080_serve_interrupt(bmv080_handle, (bmv080_callback_data_ready_t)use_sensor_output, (void*)print_handle);
-            if (bmv080_current_status != E_BMV080_OK)
-            {
-                //printf("e %d\r\n", (int32_t)bmv080_current_status);
-            }
-        //}
+    /* The interrupt is served by the BMV080 sensor driver */
+    bmv080_status_code_t bmv080_current_status = bmv080_serve_interrupt(handle, (bmv080_callback_data_ready_t)use_sensor_output, callback_parameters);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Fetching measurement data failed with BMV080 status %d\r\n", (int32_t)bmv080_current_status);
+    }
 }
 
 
@@ -83,11 +78,6 @@ sfeTkError_t sfeBmv080::begin(sfeTkII2C *theBus)
 
     // Set bus pointer
     _theBus = theBus;
-
-    // Set the bus pointer for the I2C device struct instance member
-    //_i2c_device.instance = theBus;
-
-    i2c_init(&_i2c_device);
 
     sfeTkError_t err;
     err = isConnected();
@@ -134,7 +124,8 @@ bool sfeBmv080::setMode(uint8_t mode)
     }
     else if(mode == SFE_BMV080_MODE_DUTY_CYCLE)
     {
-        bmv080_current_status = bmv080_start_duty_cycling_measurement(bmv080_handle_class, (bmv080_callback_tick_t)millis, E_BMV080_DUTY_CYCLING_MODE_0);
+        bmv080_duty_cycling_mode_t duty_cycling_mode = E_BMV080_DUTY_CYCLING_MODE_0;
+        bmv080_current_status = bmv080_start_duty_cycling_measurement(bmv080_handle_class, (bmv080_callback_tick_t)millis, duty_cycling_mode);
     }
 
     // check if the mode was set correctly
@@ -258,6 +249,37 @@ bool sfeBmv080::getID()
     else
     {
         printf("BMV080 sensor ID: %s\n", id);
+        return true;
+    }
+}
+
+uint16_t sfeBmv080::getDutyCyclingPeriod()
+{
+    uint16_t duty_cycling_period = 0;
+    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "duty_cycling_period", (void*)&duty_cycling_period);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 Duty Cycling Period: %d\n", bmv080_current_status);
+        return 0;
+    }
+    else
+    {
+        printf("BMV080 Duty Cycling Period Read: %d\n", duty_cycling_period);
+        return duty_cycling_period;
+    }
+}
+
+bool sfeBmv080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
+{
+    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "duty_cycling_period", (void*)&duty_cycling_period);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error setting BMV080 Duty Cycling Period: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        printf("BMV080 Duty Cycling Period Set: %d\n", duty_cycling_period);
         return true;
     }
 }

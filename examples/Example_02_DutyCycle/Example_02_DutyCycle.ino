@@ -1,8 +1,8 @@
 /*
-  Using the BMV080 Particulate Matter PM2.5 Sensor
+  Using the BMV080 Particulate Matter PM2.5 Sensor in Duty Cycle Mode
 
-  This example shows how to use the sensor in "continuous mode" to get
-  particulate matter readings once every second.
+  This example shows how to use the sensor in "duty cycle mode" to get
+  particulate matter readings once every 20 seconds.
 
   It uses polling of the device to check if new data is available.
 
@@ -42,7 +42,7 @@ void setup()
     // Comment out this while loop, or it will prevent the remaining code from running.
 
     Serial.println();
-    Serial.println("BMV080 Example 1 - Basic Readings");
+    Serial.println("BMV080 Example 2 - Duty Cycle");
 
     Wire.begin();
 
@@ -61,10 +61,21 @@ void setup()
     /* Initialize the Sensor (read driver, open, reset, id etc.)*/
     bmv080.init(&i2c_device);
 
-    /* Set the sensor mode to continuous mode */
-    if(bmv080.setMode(SFE_BMV080_MODE_CONTINUOUS) == true)
+    /* Set the sensor Duty Cycling Period (seconds)*/
+    uint16_t duty_cycling_period = 20;
+    if(bmv080.setDutyCyclingPeriod(duty_cycling_period) == true)
     {
-        Serial.println("BMV080 set to continuous mode");
+        Serial.println("BMV080 set to 20 second duty cycle period");
+    }
+    else
+    {
+        Serial.println("Error setting BMV080 duty cycle period");
+    }
+
+    /* Set the sensor mode to Duty Cycle mode */
+    if(bmv080.setMode(SFE_BMV080_MODE_DUTY_CYCLE) == true)
+    {
+        Serial.println("BMV080 set to Duty Cycle mode");
     }
     else
     {
@@ -87,7 +98,7 @@ void loop()
 
         Serial.println();
     }
-    delay(100);
+    delay(1000);
 }
 
 void setup_sensor(void)

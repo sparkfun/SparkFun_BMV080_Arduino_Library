@@ -99,6 +99,15 @@ class sfeBmv080
     /// @return True if new data is available, false otherwise
     bool dataAvailable();
 
+    /// @brief Get the duty cycling period
+    /// @return The duty cycling period in seconds
+    uint16_t getDutyCyclingPeriod();
+
+    /// @brief Set the duty cycling period
+    /// @param period The duty cycling period in seconds
+    /// @return True if successful, false otherwise
+    bool setDutyCyclingPeriod(uint16_t duty_cycling_period);
+
   private:
     bmv080_handle_t bmv080_handle_class = NULL;
     bool _dataAvailable = false;
