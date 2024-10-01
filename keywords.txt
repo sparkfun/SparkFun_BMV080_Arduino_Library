@@ -4,26 +4,43 @@
 # Class
 #########################################################
 
-# TODO: Add this
-TemplateClass KEYWORD1
+Bmv080 KEYWORD1
 
 #########################################################
 # Methods and Functions
 #########################################################
 
-# TODO: Add these
 begin KEYWORD2
+init KEYWORD2
+initSPI KEYWORD2
+isConnected KEYWORD2
+getDriverVersion KEYWORD2
+open KEYWORD2
+openSPI KEYWORD2
+reset KEYWORD2
+getID KEYWORD2
+setMode KEYWORD2
+getPM25 KEYWORD2
+getIsObstructed KEYWORD2
+dataAvailable KEYWORD2
+getDutyCyclingPeriod KEYWORD2
+setDutyCyclingPeriod KEYWORD2
+getVolumetricMassDensity KEYWORD2
+setVolumetricMassDensity KEYWORD2
+getIntegrationTime KEYWORD2
+setIntegrationTime KEYWORD2
+getDistributionId KEYWORD2
+setDistributionId KEYWORD2
+getDoObstructionDetection KEYWORD2
+setDoObstructionDetection KEYWORD2
+getDoVibrationFiltering KEYWORD2
+setDoVibrationFiltering KEYWORD2
 
 #########################################################
 # Constants
 #########################################################
 
-# TODO: Add these
-TEMPALTE_CONSTANT LITERAL1
-
-#########################################################
-# Structs
-#########################################################
-
-# TODO: Add these
-template_struct_t LITERAL3
+SFE_BMV080_DEFAULT_ADDRESS LITERAL1
+SFE_BMV080_DEFAULT_IRQ_PIN LITERAL1
+SFE_BMV080_MODE_CONTINUOUS LITERAL1
+SFE_BMV080_MODE_DUTY_CYCLE LITERAL1
