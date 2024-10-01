@@ -22,7 +22,9 @@
   SCK           -->     SCK (SCL)
   CS            -->     CS (AB1)
 
-  BMV080 "mode" jumper set to SPI (default)
+  BMV080 jumpers set to SPI:
+  MODE Jumper set to SPI
+  ABO jumper left OPEN (both sides of the jumper are not connected)
 
   Serial.print it out at 115200 baud to serial monitor.
 

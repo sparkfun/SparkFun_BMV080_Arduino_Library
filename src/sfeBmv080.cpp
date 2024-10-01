@@ -327,3 +327,149 @@ bool sfeBmv080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
         return true;
     }
 }
+
+float sfeBmv080::getVolumetricMassDensity()
+{
+    float volumetric_mass_density = 0.0;
+    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "volumetric_mass_density", (void*)&volumetric_mass_density);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 Volumetric Mass Density: %d\n", bmv080_current_status);
+        return 0.0;
+    }
+    else
+    {
+        return volumetric_mass_density;
+    }
+}
+
+bool sfeBmv080::setVolumetricMassDensity(float volumetric_mass_density)
+{
+    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "volumetric_mass_density", (void*)&volumetric_mass_density);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error setting BMV080 Volumetric Mass Density: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+float sfeBmv080::getIntegrationTime()
+{
+    float integration_time = 0.0;
+    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "integration_time", (void*)&integration_time);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 Integration Time: %d\n", bmv080_current_status);
+        return 0.0;
+    }
+    else
+    {
+        return integration_time;
+    }
+}
+
+bool sfeBmv080::setIntegrationTime(float integration_time)
+{
+    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "integration_time", (void*)&integration_time);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error setting BMV080 Integration Time: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+uint32_t sfeBmv080::getDistributionId()
+{
+    uint32_t distribution_id = 0;
+    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "distribution_id", (void*)&distribution_id);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 Distribution ID: %d\n", bmv080_current_status);
+        return 0;
+    }
+    else
+    {
+        return distribution_id;
+    }
+}
+
+bool sfeBmv080::setDistributionId(uint32_t distribution_id)
+{
+    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "distribution_id", (void*)&distribution_id);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error setting BMV080 Distribution ID: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool sfeBmv080::getDoObstructionDetection()
+{
+    bool do_obstruction_detection = false;
+    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "do_obstruction_detection", (void*)&do_obstruction_detection);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 Obstruction Detection: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return do_obstruction_detection;
+    }
+}
+
+bool sfeBmv080::setDoObstructionDetection(bool do_obstruction_detection)
+{
+    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "do_obstruction_detection", (void*)&do_obstruction_detection);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error setting BMV080 Obstruction Detection: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool sfeBmv080::getDoVibrationFiltering()
+{
+    bool do_vibration_filtering = false;
+    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "do_vibration_filtering", (void*)&do_vibration_filtering);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 Vibration Filtering: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return do_vibration_filtering;
+    }
+}
+
+bool sfeBmv080::setDoVibrationFiltering(bool do_vibration_filtering)
+{
+    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "do_vibration_filtering", (void*)&do_vibration_filtering);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error setting BMV080 Vibration Filtering: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+

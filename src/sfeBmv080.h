@@ -120,6 +120,53 @@ class sfeBmv080
     /// @return True if successful, false otherwise
     bool setDutyCyclingPeriod(uint16_t duty_cycling_period);
 
+    /// @brief Get a parameter: "volumetric_mass_density"
+    /// @return float volumetric_mass_density
+    float getVolumetricMassDensity();
+
+    /// @brief Set a parameter: "volumetric_mass_density"
+    /// @param volumetric_mass_density
+    /// @return True if successful, false otherwise
+    bool setVolumetricMassDensity(float volumetric_mass_density);
+
+    /// @brief Get a parameter: "integration_time"
+    /// @return float integration_time
+    float getIntegrationTime();
+
+    /// @brief Set a parameter: "integration_time"
+    /// @param integration_time
+    /// @return True if successful, false otherwise
+    bool setIntegrationTime(float integration_time);
+
+    /// @brief Get a parameter: "distribution_id"
+    /// @return uint32_t distribution_id
+    uint32_t getDistributionId();
+
+    /// @brief Set a parameter: "distribution_id"
+    /// @param distribution_id
+    /// @return True if successful, false otherwise
+    bool setDistributionId(uint32_t distribution_id);
+
+    /// @brief Get a parameter: "do_obstruction_detection"
+    /// @return bool do_obstruction_detection
+    bool getDoObstructionDetection();
+
+    /// @brief Set a parameter: "do_obstruction_detection"
+    /// @param do_obstruction_detection
+    /// @return True if successful, false otherwise
+    bool setDoObstructionDetection(bool do_obstruction_detection);
+
+    /// @brief Get a parameter: "do_vibration_filtering"
+    /// @return bool do_vibration_filtering
+    bool getDoVibrationFiltering();
+
+    /// @brief Set a parameter: "do_vibration_filtering"
+    /// @param do_vibration_filtering
+    /// @return True if successful, false otherwise
+    bool setDoVibrationFiltering(bool do_vibration_filtering);
+
+    
+
   private:
     bmv080_handle_t bmv080_handle_class = NULL;
     bool _dataAvailable = false;
