@@ -53,12 +53,19 @@ class sfeBmv080
     /// @return 0 for succuss, negative for errors, positive for warnings
     sfeTkError_t isConnected();
 
-    /// @brief Initialize the sensor
+    /// @brief Initialize the sensor i2c
     /// @details This function initializes the sensor and should be called 
-    /// before any other functions. It calls Open, Reset, getDriverVersion, and getID.
+    /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
     /// @param i2c_device The I2C device to use
     /// @return True if successful, false otherwise
     bool init(i2c_device_t *i2c_device);
+
+    /// @brief Initialize the sensor SPI
+    /// @details This function initializes the sensor and should be called
+    /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
+    /// @param spi_device The SPI device to use
+    /// @return True if successful, false otherwise
+    bool initSPI(spi_device_t *spi_device);
 
     /// @brief Get the version information of this sensor driver.
     /// @return True if successful, false otherwise
@@ -68,6 +75,11 @@ class sfeBmv080
     /// @param i2c_device The I2C device to use
     /// @return True if successful, false otherwise
     bool open(i2c_device_t *i2c_device);
+
+    /// @brief Open a sensor unit by initializing a new handle.
+    /// @param spi_device The SPI device to use
+    /// @return True if successful, false otherwise
+    bool openSPI(spi_device_t *spi_device);
 
     /// @brief Reset the sensor
     /// @return True if successful, false otherwise
