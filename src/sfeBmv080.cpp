@@ -67,7 +67,17 @@ extern "C"
 
         sfeTkError_t rc = theBus->readRegister16Region(header_adjusted, (uint8_t *)payload, payload_length * 2, nRead);
 
-        return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_READ;
+        if (rc != kSTkErrOk)
+            return E_COMBRIDGE_ERROR_READ;
+
+        if (nRead != payload_length * 2)
+            return E_COMBRIDGE_ERROR_READ;
+
+        // Need to swap the byte order
+        for (uint16_t i = 0; i < payload_length; i++)
+            payload[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
+
+        return E_COMBRIDGE_OK;
     }
 
     // --------------------------------------------------------------------------------------------
@@ -252,11 +262,11 @@ bool sfeBmv080::open()
     // bmv080_status_code_t bmv080_current_status =
     //     bmv080_open(&bmv080_handle_class, sercom_handle, read, write, delay_ms);
 
-    bmv080_status_code_t bmv080_current_status =
+    bmv080_status_code_t status =
         bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,
                     (bmv080_callback_write_t)device_write_16bit_CB, (bmv080_callback_delay_t)device_delay_CB);
 
-    if (bmv080_current_status != E_BMV080_OK)
+    if (status != E_BMV080_OK)
     {
         Serial.println("BMV080 open failed");
         return false;
