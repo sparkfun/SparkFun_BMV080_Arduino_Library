@@ -22,55 +22,126 @@
 ******************************************************************************/
 
 #include "sfeBmv080.h"
-#include "bmv080_defs.h"
 #include "bmv080.h"
+#include "bmv080_defs.h"
+
+// Some communication functions used with the system
+
+#define E_COMBRIDGE_OK ((int8_t)0)
+/*! -1: Status codes returned when memory allocation fails */
+#define E_COMBRIDGE_ERROR_MEMORY_ALLOCATION ((int8_t) - 1)
+/*! -2: Status codes returned when the read operation fails */
+#define E_COMBRIDGE_ERROR_READ ((int8_t) - 2)
+/*! -3: Status codes returned when the write operation fails */
+#define E_COMBRIDGE_ERROR_WRITE ((int8_t) - 3)
+/*! -4: Status codes returned when writing the header fails */
+#define E_COMBRIDGE_ERROR_WRITE_HEADER ((int8_t) - 4)
+/*! -5:  Status codes returned when a reference is null */
+#define E_COMBRIDGE_ERROR_NULLPTR ((int8_t) - 5)
+
+/* Exported functions prototypes ---------------------------------------------*/
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif /* __cplusplus */
 
-void bmv080_service_routine(const bmv080_handle_t handle, void* callback_parameters);
-void use_sensor_output(bmv080_output_t bmv080_output, void* callback_parameters);
+    /* Our bus read and write functions */
 
-
-/* Custom function for consuming sensor readings */
-void use_sensor_output(bmv080_output_t bmv080_output, void* callback_parameters)
-{
-    //data_ready_callback_count += 1;
-    //print_function_t print = (print_function_t)callback_parameters;
-
-
-    ((sfeBmv080*)callback_parameters)->setSensorValue(bmv080_output);
-    
-    //Serial.println(bmv080_output.pm2_5);
-    
-    //Serial.println("u");
-
-    //sfeBmv080::_sensorValue.pm2_5 = bmv080_output.pm2_5; // update the class variable with the new PM2.5 value
-    //setSensorValue(bmv080_output.pm2_5);
-    //sensorValue.pm2_5 = bmv080_output.pm2_5;
-    // print("Runtime: %.2f s, PM2.5: %.0f ug/m^3, obstructed: %s, outside detection limits: %s\r\n",
-    //     bmv080_output.runtime_in_sec, bmv080_output.pm2_5, (bmv080_output.is_obstructed ? "yes" : "no"), (bmv080_output.is_outside_detection_limits ? "yes" : "no"));
-}
-
-
-void bmv080_service_routine(const bmv080_handle_t handle, void* callback_parameters)
-{       
-    /* The interrupt is served by the BMV080 sensor driver */
-    bmv080_status_code_t bmv080_current_status = bmv080_serve_interrupt(handle, (bmv080_callback_data_ready_t)use_sensor_output, callback_parameters);
-    if (bmv080_current_status != E_BMV080_OK)
+    // --------------------------------------------------------------------------------------------
+    //
+    static int8_t device_read_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, uint16_t *payload,
+                                       uint16_t payload_length)
     {
-        printf("Fetching measurement data failed with BMV080 status %d\r\n", (int32_t)bmv080_current_status);
-    }
-}
+        if (handle == nullptr)
+            return E_COMBRIDGE_ERROR_NULLPTR;
 
+        sfeTkIBus *theBus = (sfeTkIBus *)handle;
+        uint8_t *payload_byte = (uint8_t *)payload;
+
+        /* 16-bit header left shifted by 1, since the R/W bit (most significant bit) is passed along with the 7-bit
+         * device address  */
+        uint16_t header_adjusted = header << 1;
+
+        size_t nRead = 0;
+
+        sfeTkError_t rc = theBus->readRegister16Region(header_adjusted, (uint8_t *)payload, payload_length * 2, nRead);
+
+        return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_READ;
+    }
+
+    // --------------------------------------------------------------------------------------------
+    //
+    static int8_t device_write_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, const uint16_t *payload,
+                                        uint16_t payload_length)
+    {
+        if (handle == nullptr)
+            return E_COMBRIDGE_ERROR_NULLPTR;
+
+        sfeTkIBus *theBus = (sfeTkIBus *)handle;
+
+        uint16_t header_adjusted = header << 1;
+
+        // Need to reverse the byte order
+        uint16_t payload_swapped[payload_length];
+
+        for (uint16_t i = 0; i < payload_length; i++)
+            payload_swapped[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
+
+        sfeTkError_t rc =
+            theBus->writeRegister16Region(header_adjusted, (uint8_t *)payload_swapped, payload_length * 2);
+
+        return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_WRITE;
+    }
+
+    // --------------------------------------------------------------------------------------------
+    //
+    static int8_t device_delay_CB(uint32_t period)
+    {
+        delay(period);
+
+        return E_COMBRIDGE_OK;
+    }
+
+    // static void bmv080_service_routine(const bmv080_handle_t handle, void *callback_parameters);
+    // static void use_sensor_output(bmv080_output_t bmv080_output, void *callback_parameters);
+
+    /* Custom function for consuming sensor readings */
+    static void use_sensor_output(bmv080_output_t bmv080_output, void *callback_parameters)
+    {
+        // data_ready_callback_count += 1;
+        // print_function_t print = (print_function_t)callback_parameters;
+
+        ((sfeBmv080 *)callback_parameters)->setSensorValue(bmv080_output);
+
+        // Serial.println(bmv080_output.pm2_5);
+
+        // Serial.println("u");
+
+        // sfeBmv080::_sensorValue.pm2_5 = bmv080_output.pm2_5; // update the class variable with the new PM2.5 value
+        // setSensorValue(bmv080_output.pm2_5);
+        // sensorValue.pm2_5 = bmv080_output.pm2_5;
+        //  print("Runtime: %.2f s, PM2.5: %.0f ug/m^3, obstructed: %s, outside detection limits: %s\r\n",
+        //      bmv080_output.runtime_in_sec, bmv080_output.pm2_5, (bmv080_output.is_obstructed ? "yes" : "no"),
+        //      (bmv080_output.is_outside_detection_limits ? "yes" : "no"));
+    }
+
+    static void bmv080_service_routine(const bmv080_handle_t handle, void *callback_parameters)
+    {
+        /* The interrupt is served by the BMV080 sensor driver */
+        bmv080_status_code_t bmv080_current_status =
+            bmv080_serve_interrupt(handle, (bmv080_callback_data_ready_t)use_sensor_output, callback_parameters);
+        if (bmv080_current_status != E_BMV080_OK)
+        {
+            printf("Fetching measurement data failed with BMV080 status %d\r\n", (int32_t)bmv080_current_status);
+        }
+    }
 
 #ifdef __cplusplus
 }
 #endif
 
-
-sfeTkError_t sfeBmv080::begin(sfeTkII2C *theBus)
+sfeTkError_t sfeBmv080::begin(sfeTkIBus *theBus)
 {
     // Nullptr check
     if (theBus == nullptr)
@@ -79,20 +150,7 @@ sfeTkError_t sfeBmv080::begin(sfeTkII2C *theBus)
     // Set bus pointer
     _theBus = theBus;
 
-    sfeTkError_t err;
-    err = isConnected();
-    // Check whether the ping was successful
-    if (err != kSTkErrOk)
-        return err;
-
-    // Done!
     return kSTkErrOk;
-}
-
-sfeTkError_t sfeBmv080::isConnected()
-{
-    // Just ping the device address
-    return _theBus->ping();
 }
 
 float sfeBmv080::getPM25()
@@ -118,14 +176,15 @@ bool sfeBmv080::setMode(uint8_t mode)
 {
     bmv080_status_code_t bmv080_current_status; // return status from the Bosch API function
 
-    if(mode == SFE_BMV080_MODE_CONTINUOUS)
+    if (mode == SFE_BMV080_MODE_CONTINUOUS)
     {
         bmv080_current_status = bmv080_start_continuous_measurement(bmv080_handle_class);
     }
-    else if(mode == SFE_BMV080_MODE_DUTY_CYCLE)
+    else if (mode == SFE_BMV080_MODE_DUTY_CYCLE)
     {
         bmv080_duty_cycling_mode_t duty_cycling_mode = E_BMV080_DUTY_CYCLING_MODE_0;
-        bmv080_current_status = bmv080_start_duty_cycling_measurement(bmv080_handle_class, (bmv080_callback_tick_t)millis, duty_cycling_mode);
+        bmv080_current_status = bmv080_start_duty_cycling_measurement(
+            bmv080_handle_class, (bmv080_callback_tick_t)millis, duty_cycling_mode);
     }
 
     // check if the mode was set correctly
@@ -142,7 +201,7 @@ bool sfeBmv080::setMode(uint8_t mode)
 bool sfeBmv080::dataAvailable()
 {
     bmv080_service_routine(bmv080_handle_class, this);
-    if(_dataAvailable == true)
+    if (_dataAvailable == true)
     {
         _dataAvailable = false;
         return true;
@@ -151,24 +210,28 @@ bool sfeBmv080::dataAvailable()
         return false;
 }
 
-bool sfeBmv080::init(i2c_device_t *i2c_device)
+// bool sfeBmv080::init(i2c_device_t *i2c_device)
+bool sfeBmv080::init(void)
 {
-    if(getDriverVersion() == false)
+    if (_theBus == nullptr)
+        return false;
+
+    if (getDriverVersion() == false)
     {
         return false;
     }
 
-    if(open(i2c_device) == false)
+    if (open() == false)
     {
         return false;
     }
 
-    if(reset() == false)
+    if (reset() == false)
     {
         return false;
     }
 
-    if(getID() == false)
+    if (getID() == false)
     {
         return false;
     }
@@ -176,60 +239,22 @@ bool sfeBmv080::init(i2c_device_t *i2c_device)
     return true;
 }
 
-bool sfeBmv080::open(i2c_device_t *i2c_device)
+bool sfeBmv080::open()
 {
-    bmv080_sercom_handle_t sercom_handle = (bmv080_sercom_handle_t)i2c_device;
-    bmv080_callback_read_t read = (const bmv080_callback_read_t)combridge_i2c_read_16bit;
-    bmv080_callback_write_t write = (const bmv080_callback_write_t)combridge_i2c_write_16bit;
-    bmv080_callback_delay_t delay_ms = (const bmv080_callback_delay_t)combridge_delay;
-
-    bmv080_status_code_t bmv080_current_status = bmv080_open(&bmv080_handle_class, sercom_handle, read, write, delay_ms);
-
-    if (bmv080_current_status != E_BMV080_OK)
-    {
-        Serial.println("BMV080 open failed");
+    if (_theBus == nullptr)
         return false;
-    }
-    else
-    {
-        Serial.println("BMV080 open successfully");
-        return true;
-    }
-}
 
-bool sfeBmv080::initSPI(spi_device_t *spi_device)
-{
-    if(getDriverVersion() == false)
-    {
-        return false;
-    }
+    // bmv080_sercom_handle_t sercom_handle = (bmv080_sercom_handle_t)i2c_device;
+    // bmv080_callback_read_t read = (const bmv080_callback_read_t)combridge_i2c_read_16bit;
+    // bmv080_callback_write_t write = (const bmv080_callback_write_t)combridge_i2c_write_16bit;
+    // bmv080_callback_delay_t delay_ms = (const bmv080_callback_delay_t)combridge_delay;
 
-    if(openSPI(spi_device) == false)
-    {
-        return false;
-    }
+    // bmv080_status_code_t bmv080_current_status =
+    //     bmv080_open(&bmv080_handle_class, sercom_handle, read, write, delay_ms);
 
-    if(reset() == false)
-    {
-        return false;
-    }
-
-    if(getID() == false)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool sfeBmv080::openSPI(spi_device_t *spi_device)
-{
-    bmv080_sercom_handle_t sercom_handle = (bmv080_sercom_handle_t)spi_device;
-    bmv080_callback_read_t read = (const bmv080_callback_read_t)combridge_spi_read_16bit;
-    bmv080_callback_write_t write = (const bmv080_callback_write_t)combridge_spi_write_16bit;
-    bmv080_callback_delay_t delay_ms = (const bmv080_callback_delay_t)combridge_delay;
-
-    bmv080_status_code_t bmv080_current_status = bmv080_open(&bmv080_handle_class, sercom_handle, read, write, delay_ms);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,
+                    (bmv080_callback_write_t)device_write_16bit_CB, (bmv080_callback_delay_t)device_delay_CB);
 
     if (bmv080_current_status != E_BMV080_OK)
     {
@@ -267,14 +292,15 @@ bool sfeBmv080::getDriverVersion()
     char git_hash[12];
     int32_t commits_ahead = 0;
 
-    bmv080_status_code_t bmv080_current_status = bmv080_get_driver_version(&major, &minor, &patch, git_hash, &commits_ahead);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_driver_version(&major, &minor, &patch, git_hash, &commits_ahead);
 
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error getting BMV080 driver version: %d\n", bmv080_current_status);
         return false;
     }
-    
+
     printf("BMV080 driver version: %d.%d.%d\n", major, minor, patch);
     return true;
 }
@@ -300,7 +326,8 @@ bool sfeBmv080::getID()
 uint16_t sfeBmv080::getDutyCyclingPeriod()
 {
     uint16_t duty_cycling_period = 0;
-    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "duty_cycling_period", (void*)&duty_cycling_period);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_parameter(bmv080_handle_class, "duty_cycling_period", (void *)&duty_cycling_period);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error getting BMV080 Duty Cycling Period: %d\n", bmv080_current_status);
@@ -315,7 +342,8 @@ uint16_t sfeBmv080::getDutyCyclingPeriod()
 
 bool sfeBmv080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
 {
-    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "duty_cycling_period", (void*)&duty_cycling_period);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_set_parameter(bmv080_handle_class, "duty_cycling_period", (void *)&duty_cycling_period);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error setting BMV080 Duty Cycling Period: %d\n", bmv080_current_status);
@@ -331,7 +359,8 @@ bool sfeBmv080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
 float sfeBmv080::getVolumetricMassDensity()
 {
     float volumetric_mass_density = 0.0;
-    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "volumetric_mass_density", (void*)&volumetric_mass_density);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_parameter(bmv080_handle_class, "volumetric_mass_density", (void *)&volumetric_mass_density);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error getting BMV080 Volumetric Mass Density: %d\n", bmv080_current_status);
@@ -345,7 +374,8 @@ float sfeBmv080::getVolumetricMassDensity()
 
 bool sfeBmv080::setVolumetricMassDensity(float volumetric_mass_density)
 {
-    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "volumetric_mass_density", (void*)&volumetric_mass_density);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_set_parameter(bmv080_handle_class, "volumetric_mass_density", (void *)&volumetric_mass_density);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error setting BMV080 Volumetric Mass Density: %d\n", bmv080_current_status);
@@ -360,7 +390,8 @@ bool sfeBmv080::setVolumetricMassDensity(float volumetric_mass_density)
 float sfeBmv080::getIntegrationTime()
 {
     float integration_time = 0.0;
-    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "integration_time", (void*)&integration_time);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_parameter(bmv080_handle_class, "integration_time", (void *)&integration_time);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error getting BMV080 Integration Time: %d\n", bmv080_current_status);
@@ -374,7 +405,8 @@ float sfeBmv080::getIntegrationTime()
 
 bool sfeBmv080::setIntegrationTime(float integration_time)
 {
-    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "integration_time", (void*)&integration_time);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_set_parameter(bmv080_handle_class, "integration_time", (void *)&integration_time);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error setting BMV080 Integration Time: %d\n", bmv080_current_status);
@@ -389,7 +421,8 @@ bool sfeBmv080::setIntegrationTime(float integration_time)
 uint32_t sfeBmv080::getDistributionId()
 {
     uint32_t distribution_id = 0;
-    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "distribution_id", (void*)&distribution_id);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_parameter(bmv080_handle_class, "distribution_id", (void *)&distribution_id);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error getting BMV080 Distribution ID: %d\n", bmv080_current_status);
@@ -403,7 +436,8 @@ uint32_t sfeBmv080::getDistributionId()
 
 bool sfeBmv080::setDistributionId(uint32_t distribution_id)
 {
-    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "distribution_id", (void*)&distribution_id);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_set_parameter(bmv080_handle_class, "distribution_id", (void *)&distribution_id);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error setting BMV080 Distribution ID: %d\n", bmv080_current_status);
@@ -418,7 +452,8 @@ bool sfeBmv080::setDistributionId(uint32_t distribution_id)
 bool sfeBmv080::getDoObstructionDetection()
 {
     bool do_obstruction_detection = false;
-    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "do_obstruction_detection", (void*)&do_obstruction_detection);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_parameter(bmv080_handle_class, "do_obstruction_detection", (void *)&do_obstruction_detection);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error getting BMV080 Obstruction Detection: %d\n", bmv080_current_status);
@@ -432,7 +467,8 @@ bool sfeBmv080::getDoObstructionDetection()
 
 bool sfeBmv080::setDoObstructionDetection(bool do_obstruction_detection)
 {
-    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "do_obstruction_detection", (void*)&do_obstruction_detection);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_set_parameter(bmv080_handle_class, "do_obstruction_detection", (void *)&do_obstruction_detection);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error setting BMV080 Obstruction Detection: %d\n", bmv080_current_status);
@@ -447,7 +483,8 @@ bool sfeBmv080::setDoObstructionDetection(bool do_obstruction_detection)
 bool sfeBmv080::getDoVibrationFiltering()
 {
     bool do_vibration_filtering = false;
-    bmv080_status_code_t bmv080_current_status = bmv080_get_parameter(bmv080_handle_class, "do_vibration_filtering", (void*)&do_vibration_filtering);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_parameter(bmv080_handle_class, "do_vibration_filtering", (void *)&do_vibration_filtering);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error getting BMV080 Vibration Filtering: %d\n", bmv080_current_status);
@@ -461,7 +498,8 @@ bool sfeBmv080::getDoVibrationFiltering()
 
 bool sfeBmv080::setDoVibrationFiltering(bool do_vibration_filtering)
 {
-    bmv080_status_code_t bmv080_current_status = bmv080_set_parameter(bmv080_handle_class, "do_vibration_filtering", (void*)&do_vibration_filtering);
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_set_parameter(bmv080_handle_class, "do_vibration_filtering", (void *)&do_vibration_filtering);
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error setting BMV080 Vibration Filtering: %d\n", bmv080_current_status);
@@ -472,4 +510,3 @@ bool sfeBmv080::setDoVibrationFiltering(bool do_vibration_filtering)
         return true;
     }
 }
-

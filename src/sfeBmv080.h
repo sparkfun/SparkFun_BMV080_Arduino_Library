@@ -23,7 +23,6 @@
 
 #include "bmv080.h"
 #include "bmv080_defs.h"
-#include "combridge.h"
 
 #include <SparkFun_Toolkit.h>
 #include <stdint.h>
@@ -33,8 +32,6 @@
 
 #define SFE_BMV080_MODE_CONTINUOUS 0
 #define SFE_BMV080_MODE_DUTY_CYCLE 1
-
-
 
 class sfeBmv080
 {
@@ -47,25 +44,20 @@ class sfeBmv080
     /// @brief Begins the Device
     /// @param theBus I2C bus to use for communication
     /// @return 0 for succuss, negative for errors, positive for warnings
-    sfeTkError_t begin(sfeTkII2C *theBus = nullptr);
+    sfeTkError_t begin(sfeTkIBus *theBus = nullptr);
 
-    /// @brief Checks if the Device is connected
-    /// @return 0 for succuss, negative for errors, positive for warnings
-    sfeTkError_t isConnected();
+    // /// @brief Checks if the Device is connected
+    // /// @return 0 for succuss, negative for errors, positive for warnings
+    // sfeTkError_t isConnected();
 
     /// @brief Initialize the sensor i2c
-    /// @details This function initializes the sensor and should be called 
+    /// @details This function initializes the sensor and should be called
     /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
     /// @param i2c_device The I2C device to use
     /// @return True if successful, false otherwise
-    bool init(i2c_device_t *i2c_device);
+    // bool init(i2c_device_t *i2c_device);
 
-    /// @brief Initialize the sensor SPI
-    /// @details This function initializes the sensor and should be called
-    /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
-    /// @param spi_device The SPI device to use
-    /// @return True if successful, false otherwise
-    bool initSPI(spi_device_t *spi_device);
+    bool init(void);
 
     /// @brief Get the version information of this sensor driver.
     /// @return True if successful, false otherwise
@@ -74,12 +66,7 @@ class sfeBmv080
     /// @brief Open a sensor unit by initializing a new handle.
     /// @param i2c_device The I2C device to use
     /// @return True if successful, false otherwise
-    bool open(i2c_device_t *i2c_device);
-
-    /// @brief Open a sensor unit by initializing a new handle.
-    /// @param spi_device The SPI device to use
-    /// @return True if successful, false otherwise
-    bool openSPI(spi_device_t *spi_device);
+    bool open(void);
 
     /// @brief Reset the sensor
     /// @return True if successful, false otherwise
@@ -102,9 +89,8 @@ class sfeBmv080
     /// @return True if obstructed, false otherwise
     bool getIsObstructed();
 
-
     void setSensorValue(bmv080_output_t bmv080_output);
-    
+
     /// @brief Check if new data is available
     /// @details This function should be called in the main loop to check if new data is available
     /// @details If new data is available, the data can be read using getPM25 and getIsObstructed
@@ -165,13 +151,11 @@ class sfeBmv080
     /// @return True if successful, false otherwise
     bool setDoVibrationFiltering(bool do_vibration_filtering);
 
-    
-
   private:
     bmv080_handle_t bmv080_handle_class = NULL;
     bool _dataAvailable = false;
     bmv080_output_t _sensorValue;
 
   protected:
-    sfeTkII2C *_theBus;
+    sfeTkIBus *_theBus;
 };

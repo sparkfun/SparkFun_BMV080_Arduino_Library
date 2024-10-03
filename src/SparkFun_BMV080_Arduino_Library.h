@@ -30,13 +30,10 @@
 #include <SparkFun_Toolkit.h>
 
 // #include "Arduino.h"
-#include <bmv080.h>
-#include <bmv080_defs.h>
-#include "combridge.h"
 
 // The BMV080 Bosch API requires a larger than usual stack size
 // In particular, bmv080_serve_interrupt is the culprit.
-SET_LOOP_TASK_STACK_SIZE(60 * 1024);  // 60KB
+SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
 
 class Bmv080 : public sfeBmv080
 {
@@ -51,14 +48,16 @@ class Bmv080 : public sfeBmv080
         _theI2CBus.init(wirePort, address);
 
         // Begin the sensor
-        return sfeBmv080::begin(&_theI2CBus) == kSTkErrOk;
+        sfeTkError_t rc = sfeBmv080::begin(&_theI2CBus);
+
+        return rc == kSTkErrOk ? isConnected() : false;
     }
 
     /// @brief Checks if the Device is connected
     /// @return True if the sensor is connected, false otherwise
     bool isConnected()
     {
-        return sfeBmv080::isConnected() == kSTkErrOk;
+        return _theI2CBus.ping() == kSTkErrOk;
     }
 
   private:
