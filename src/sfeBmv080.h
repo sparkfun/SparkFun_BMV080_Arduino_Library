@@ -42,21 +42,14 @@ class sfeBmv080
     }
 
     /// @brief Begins the Device
-    /// @param theBus I2C bus to use for communication
+    /// @param theBus SparkFun Toolkit bus to use for communication
     /// @return 0 for succuss, negative for errors, positive for warnings
     sfeTkError_t begin(sfeTkIBus *theBus = nullptr);
 
-    // /// @brief Checks if the Device is connected
-    // /// @return 0 for succuss, negative for errors, positive for warnings
-    // sfeTkError_t isConnected();
-
-    /// @brief Initialize the sensor i2c
+    /// @brief Initialize the sensor
     /// @details This function initializes the sensor and should be called
     /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
-    /// @param i2c_device The I2C device to use
     /// @return True if successful, false otherwise
-    // bool init(i2c_device_t *i2c_device);
-
     bool init(void);
 
     /// @brief Get the version information of this sensor driver.
@@ -64,7 +57,6 @@ class sfeBmv080
     bool getDriverVersion();
 
     /// @brief Open a sensor unit by initializing a new handle.
-    /// @param i2c_device The I2C device to use
     /// @return True if successful, false otherwise
     bool open(void);
 

@@ -25,7 +25,9 @@
 #include "bmv080.h"
 #include "bmv080_defs.h"
 
-// Some communication functions used with the system
+// Some communication functions used with the system. These are from the original code from
+// Bosch  - so keeping them the same. It is unclear if the library they provide depends on these
+// specific values - it probably does - so leaving as is.
 
 #define E_COMBRIDGE_OK ((int8_t)0)
 /*! -1: Status codes returned when memory allocation fails */
@@ -39,7 +41,7 @@
 /*! -5:  Status codes returned when a reference is null */
 #define E_COMBRIDGE_ERROR_NULLPTR ((int8_t) - 5)
 
-/* Exported functions prototypes ---------------------------------------------*/
+// C function used in this library only - so static
 
 #ifdef __cplusplus
 extern "C"
@@ -49,6 +51,7 @@ extern "C"
     /* Our bus read and write functions */
 
     // --------------------------------------------------------------------------------------------
+    // Callback for reading data-- called from the Bosch supplied library
     //
     static int8_t device_read_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, uint16_t *payload,
                                        uint16_t payload_length)
@@ -56,24 +59,25 @@ extern "C"
         if (handle == nullptr)
             return E_COMBRIDGE_ERROR_NULLPTR;
 
+        // Get our sparkfun toolkit bus object/interface
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
-        uint8_t *payload_byte = (uint8_t *)payload;
 
-        /* 16-bit header left shifted by 1, since the R/W bit (most significant bit) is passed along with the 7-bit
-         * device address  */
+        // From Bosch example:
+        //    16-bit header left shifted by 1, since the R/W bit (most significant bit) is passed along with the 7-bit
+        //     device address
         uint16_t header_adjusted = header << 1;
 
+        // Our output var.
         size_t nRead = 0;
 
+        // Call the read reg 16 method on the bus.
         sfeTkError_t rc = theBus->readRegister16Region(header_adjusted, (uint8_t *)payload, payload_length * 2, nRead);
 
-        if (rc != kSTkErrOk)
+        // Errors reading, not the expected number of bytes?
+        if (rc != kSTkErrOk || nRead != payload_length * 2)
             return E_COMBRIDGE_ERROR_READ;
 
-        if (nRead != payload_length * 2)
-            return E_COMBRIDGE_ERROR_READ;
-
-        // Need to swap the byte order
+        // from the Bosch example ...Need to swap the byte order
         for (uint16_t i = 0; i < payload_length; i++)
             payload[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
 
@@ -81,6 +85,7 @@ extern "C"
     }
 
     // --------------------------------------------------------------------------------------------
+    // Callback for reading data-- called from the Bosch supplied library
     //
     static int8_t device_write_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, const uint16_t *payload,
                                         uint16_t payload_length)
@@ -92,19 +97,23 @@ extern "C"
 
         uint16_t header_adjusted = header << 1;
 
-        // Need to reverse the byte order
+        // Need to reverse the byte order - setup a buffer array
         uint16_t payload_swapped[payload_length];
 
+        // swap the byte order
         for (uint16_t i = 0; i < payload_length; i++)
             payload_swapped[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
 
+        // call the write method on the bus
         sfeTkError_t rc =
             theBus->writeRegister16Region(header_adjusted, (uint8_t *)payload_swapped, payload_length * 2);
 
+        // okay, not okay?
         return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_WRITE;
     }
 
     // --------------------------------------------------------------------------------------------
+    // Delay callback function for the Bosch library
     //
     static int8_t device_delay_CB(uint32_t period)
     {
@@ -113,8 +122,7 @@ extern "C"
         return E_COMBRIDGE_OK;
     }
 
-    // static void bmv080_service_routine(const bmv080_handle_t handle, void *callback_parameters);
-    // static void use_sensor_output(bmv080_output_t bmv080_output, void *callback_parameters);
+    // This function is just used in this file, so declaring it static
 
     /* Custom function for consuming sensor readings */
     static void use_sensor_output(bmv080_output_t bmv080_output, void *callback_parameters)
@@ -220,31 +228,15 @@ bool sfeBmv080::dataAvailable()
         return false;
 }
 
-// bool sfeBmv080::init(i2c_device_t *i2c_device)
+// Our init method
 bool sfeBmv080::init(void)
 {
+    // Do we have a bus?
     if (_theBus == nullptr)
         return false;
 
-    if (getDriverVersion() == false)
-    {
+    if (!getDriverVersion() || !open() || !reset() || !getID())
         return false;
-    }
-
-    if (open() == false)
-    {
-        return false;
-    }
-
-    if (reset() == false)
-    {
-        return false;
-    }
-
-    if (getID() == false)
-    {
-        return false;
-    }
 
     return true;
 }
@@ -254,13 +246,8 @@ bool sfeBmv080::open()
     if (_theBus == nullptr)
         return false;
 
-    // bmv080_sercom_handle_t sercom_handle = (bmv080_sercom_handle_t)i2c_device;
-    // bmv080_callback_read_t read = (const bmv080_callback_read_t)combridge_i2c_read_16bit;
-    // bmv080_callback_write_t write = (const bmv080_callback_write_t)combridge_i2c_write_16bit;
-    // bmv080_callback_delay_t delay_ms = (const bmv080_callback_delay_t)combridge_delay;
-
-    // bmv080_status_code_t bmv080_current_status =
-    //     bmv080_open(&bmv080_handle_class, sercom_handle, read, write, delay_ms);
+    // Open the device - pass in the data read, data write and delay functions callbacks. Note - the "secrom_handle_t"
+    // is just a pointer to our Tookkit communication bus objects
 
     bmv080_status_code_t status =
         bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,
