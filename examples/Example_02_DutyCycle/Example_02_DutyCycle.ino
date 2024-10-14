@@ -30,8 +30,6 @@
 Bmv080 bmv080; // Create an instance of the BMV080 class
 #define BMV080_ADDR 0x57  // SparkFun BMV080 Breakout defaults to 0x57
 
-i2c_device_t i2c_device = {}; // I2C device struct instance for Bosch API
-
 void setup()
 {
     Serial.begin(115200);
@@ -55,11 +53,8 @@ void setup()
 
     // Wire.setClock(400000); //Increase I2C data rate to 400kHz
 
-    /* Communication interface initialization */
-    i2c_init(&i2c_device);
-
     /* Initialize the Sensor (read driver, open, reset, id etc.)*/
-    bmv080.init(&i2c_device);
+    bmv080.init();
 
     /* Set the sensor Duty Cycling Period (seconds)*/
     uint16_t duty_cycling_period = 20;
