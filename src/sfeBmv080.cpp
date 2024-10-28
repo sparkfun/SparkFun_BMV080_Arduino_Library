@@ -25,6 +25,8 @@
 #include "bmv080.h"
 #include "bmv080_defs.h"
 
+#define SPI_CLK_FREQ          ((uint32_t)(1e6))
+
 // Some communication functions used with the system. These are from the original code from
 // Bosch  - so keeping them the same. It is unclear if the library they provide depends on these
 // specific values - it probably does - so leaving as is.
@@ -229,19 +231,21 @@ bool sfeBmv080::dataAvailable()
 }
 
 // Our init method
-bool sfeBmv080::init(void)
+bool sfeBmv080::init(spi_device_t *spi_device)
 {
     // Do we have a bus?
     if (_theBus == nullptr)
         return false;
 
-    if (!getDriverVersion() || !open() || !reset() || !getID())
+    if (!getDriverVersion() || !open(spi_device) || !reset() || !getID())
         return false;
 
     return true;
 }
 
-bool sfeBmv080::open()
+
+
+bool sfeBmv080::open(spi_device_t *spi_device)
 {
     if (_theBus == nullptr)
         return false;
@@ -249,8 +253,13 @@ bool sfeBmv080::open()
     // Open the device - pass in the data read, data write and delay functions callbacks. Note - the "secrom_handle_t"
     // is just a pointer to our Tookkit communication bus objects
 
+    // When sending a sercom handle of SPI to bmv_open, the pointer must be a struct that includes both the SPI port (instance) and the Settings
+    // This is because the Bosch API needs to know the SPI port and the settings for the SPI port
+
+
+
     bmv080_status_code_t status =
-        bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,
+        bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)spi_device, (bmv080_callback_read_t)device_read_16bit_CB,
                     (bmv080_callback_write_t)device_write_16bit_CB, (bmv080_callback_delay_t)device_delay_CB);
 
     if (status != E_BMV080_OK)

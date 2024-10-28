@@ -37,6 +37,7 @@
 
 Bmv080 bmv080; // Create an instance of the BMV080 class
 
+
 spi_device_t spi_device = {}; // SPI device struct instance for Bosch API
 
 void setup()
@@ -51,15 +52,20 @@ void setup()
     Serial.println();
     Serial.println("BMV080 Example 4 - SPI");
 
-    /* Communication interface initialization */
+    //SPI.begin();
+
+    // if (bmv080.begin(15, SPI) == false) {
+    //     Serial.println("SPI init failure. Check your jumpers and the hookup guide. Freezing...");
+    //     while (1)
+    //     ;
+    // }
+    // Serial.println("BMV080 SPI init successful");
+
+        /* Communication interface initialization */
     spi_init(&spi_device);
 
-    if (bmv080.initSPI(&spi_device) == false) {
-        Serial.println("SPI init failure. Check your jumpers and the hookup guide. Freezing...");
-        while (1)
-        ;
-    }
-    Serial.println("BMV080 SPI init successful");
+    /* Initialize the Sensor (read driver, open, reset, id etc.)*/
+    bmv080.init(&spi_device);
 
     /* Set the sensor mode to continuous mode */
     if(bmv080.setMode(SFE_BMV080_MODE_CONTINUOUS) == true)
@@ -88,4 +94,18 @@ void loop()
         Serial.println();
     }
     delay(100);
+}
+
+void spi_init(spi_device_t *spi_device)
+{
+    SPISettings spi_settings(SPI_CLK_FREQ, MSBFIRST, SPI_MODE0);
+    spi_device->instance = &SPI;
+    spi_device->settings = spi_settings;
+
+    pinMode(SS, OUTPUT);
+    pinMode(MOSI, OUTPUT);
+    pinMode(SCK, OUTPUT);
+    pinMode(MISO, INPUT);
+    digitalWrite(SS, HIGH);
+    spi_device->instance->begin();
 }

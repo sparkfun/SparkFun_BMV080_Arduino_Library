@@ -33,6 +33,18 @@
 #define SFE_BMV080_MODE_CONTINUOUS 0
 #define SFE_BMV080_MODE_DUTY_CYCLE 1
 
+#define SPI_CLK_FREQ          ((uint32_t)(1e6)) // 1 MHz
+
+typedef struct
+{
+    /*! Instance of arduino SPI protocol instance */
+    SPIClass *instance;
+    /*! Instance of arduino SPI settings to be applied before every transmission */
+    SPISettings settings;
+} spi_device_t;
+
+
+
 class sfeBmv080
 {
   public:
@@ -50,7 +62,7 @@ class sfeBmv080
     /// @details This function initializes the sensor and should be called
     /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
     /// @return True if successful, false otherwise
-    bool init(void);
+    bool init(spi_device_t *spi_device);
 
     /// @brief Get the version information of this sensor driver.
     /// @return True if successful, false otherwise
@@ -58,7 +70,7 @@ class sfeBmv080
 
     /// @brief Open a sensor unit by initializing a new handle.
     /// @return True if successful, false otherwise
-    bool open(void);
+    bool open(spi_device_t *spi_device);
 
     /// @brief Reset the sensor
     /// @return True if successful, false otherwise
