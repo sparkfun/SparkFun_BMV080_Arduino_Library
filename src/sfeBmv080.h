@@ -62,7 +62,7 @@ class sfeBmv080
     /// @details This function initializes the sensor and should be called
     /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
     /// @return True if successful, false otherwise
-    bool init(spi_device_t *spi_device);
+    bool init();
 
     /// @brief Get the version information of this sensor driver.
     /// @return True if successful, false otherwise
@@ -70,7 +70,7 @@ class sfeBmv080
 
     /// @brief Open a sensor unit by initializing a new handle.
     /// @return True if successful, false otherwise
-    bool open(spi_device_t *spi_device);
+    bool open();
 
     /// @brief Reset the sensor
     /// @return True if successful, false otherwise

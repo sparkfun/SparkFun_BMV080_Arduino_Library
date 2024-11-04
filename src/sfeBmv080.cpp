@@ -231,13 +231,13 @@ bool sfeBmv080::dataAvailable()
 }
 
 // Our init method
-bool sfeBmv080::init(spi_device_t *spi_device)
+bool sfeBmv080::init()
 {
     // Do we have a bus?
     if (_theBus == nullptr)
         return false;
 
-    if (!getDriverVersion() || !open(spi_device) || !reset() || !getID())
+    if (!getDriverVersion() || !open() || !reset() || !getID())
         return false;
 
     return true;
@@ -245,7 +245,7 @@ bool sfeBmv080::init(spi_device_t *spi_device)
 
 
 
-bool sfeBmv080::open(spi_device_t *spi_device)
+bool sfeBmv080::open()
 {
     if (_theBus == nullptr)
         return false;
@@ -259,7 +259,7 @@ bool sfeBmv080::open(spi_device_t *spi_device)
 
 
     bmv080_status_code_t status =
-        bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)spi_device, (bmv080_callback_read_t)device_read_16bit_CB,
+        bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,
                     (bmv080_callback_write_t)device_write_16bit_CB, (bmv080_callback_delay_t)device_delay_CB);
 
     if (status != E_BMV080_OK)

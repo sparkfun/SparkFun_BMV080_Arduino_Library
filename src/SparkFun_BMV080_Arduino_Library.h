@@ -35,24 +35,38 @@
 // In particular, bmv080_serve_interrupt is the culprit.
 SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
 
-class Bmv080 : public sfeBmv080
+class SparkFunBMV080I2C : public sfeBmv080
 {
   public:
-    // /// @brief Begins the Device
-    // /// @param address I2C device address to use for the sensor
-    // /// @param wirePort Wire port to use for I2C communication
-    // /// @return True if successful, false otherwise
-    // bool begin(const uint8_t address = SFE_BMV080_DEFAULT_ADDRESS, TwoWire &wirePort = Wire)
-    // {
-    //     // Setup Arudino I2C bus
-    //     _theI2CBus.init(wirePort, address);
+    /// @brief Begins the Device
+    /// @param address I2C device address to use for the sensor
+    /// @param wirePort Wire port to use for I2C communication
+    /// @return True if successful, false otherwise
+    bool begin(const uint8_t address = SFE_BMV080_DEFAULT_ADDRESS, TwoWire &wirePort = Wire)
+    {
+        // Setup Arudino I2C bus
+        _theI2CBus.init(wirePort, address);
 
-    //     // Begin the sensor
-    //     sfeTkError_t rc = sfeBmv080::begin(&_theI2CBus);
+        // Begin the sensor
+        sfeTkError_t rc = sfeBmv080::begin(&_theI2CBus);
 
-    //     return rc == kSTkErrOk ? isConnected() : false;
-    // }
+        return rc == kSTkErrOk ? isConnected() : false;
+    }
 
+    /// @brief Checks if the Device is connected
+    /// @return True if the sensor is connected, false otherwise
+    bool isConnected()
+    {
+        return _theI2CBus.ping() == kSTkErrOk;
+    }
+
+  private:
+    sfeTkArdI2C _theI2CBus;
+};
+
+class SparkFunBMV080SPI : public sfeBmv080
+{
+  public:
     /// @brief Begins the Device with SPI as the communication bus
     /// @param csPin The chip select pin for the sensor
     /// @param spiPort The SPI port to use for communication
@@ -75,15 +89,6 @@ class Bmv080 : public sfeBmv080
         return rc == kSTkErrOk ? true : false;
     }
 
-
-    /// @brief Checks if the Device is connected
-    /// @return True if the sensor is connected, false otherwise
-    bool isConnected()
-    {
-        return _theI2CBus.ping() == kSTkErrOk;
-    }
-
   private:
-    sfeTkArdI2C _theI2CBus;
     sfeTkArdSPI _theSPIBus;
 };
