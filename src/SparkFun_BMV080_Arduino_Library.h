@@ -73,7 +73,7 @@ class SparkFunBMV080SPI : public sfeBmv080
     /// @param spiPort The SPI port to use for communication
     /// @param spiSettings The SPI settings to use for communication
     /// @return True if successful, false otherwise
-    bool begin(uint8_t csPin, SPIClass &spiPort = SPI, SPISettings spiSettings = SPISettings(100000, MSBFIRST, SPI_MODE0))
+    bool begin(uint8_t csPin, SPIClass &spiPort = SPI, SPISettings spiSettings = SPISettings(1000000, MSBFIRST, SPI_MODE0))
     {
 
         // Setup Arduino SPI bus

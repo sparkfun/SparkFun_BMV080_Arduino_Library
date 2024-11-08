@@ -71,7 +71,6 @@ extern "C"
 
         if(theBus->type() == kBusTypeI2C)
         {
-            Serial.println("I2C");
             header = header << 1;
             // the toolkit is set to adjust payload byte order, so we don't need to do it here
             // however, we do need to adjust the header byte order
@@ -88,7 +87,6 @@ extern "C"
         }
         else
         {
-            Serial.println("SPI");
             // Call the read reg 16 method on the bus.
             sfeTkError_t rc = theBus->readRegister16Region16(header, payload, payload_length, nRead);   
             // Errors reading, not the expected number of bytes?
@@ -114,7 +112,6 @@ extern "C"
 
         if(theBus->type() == kBusTypeI2C)
         {
-            Serial.println("I2C");
             header = header << 1;
             // the toolkit is set to adjust payload byte order, so we don't need to do it here
             // however, we do need to adjust the header byte order
@@ -130,7 +127,6 @@ extern "C"
         }
         else
         {
-            Serial.println("SPI");
             // call the write method on the bus
             rc = theBus->writeRegister16Region16(header, payload, payload_length);
         }
