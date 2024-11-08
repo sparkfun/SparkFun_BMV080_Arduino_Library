@@ -36,6 +36,7 @@
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 
 SparkFunBMV080SPI bmv080; // Create an instance of the BMV080 class
+#define CS_PIN 15 // Define the chip select pin
 
 void setup()
 {
@@ -46,10 +47,16 @@ void setup()
     // For a final version of a project that does not need serial debug (or a USB cable plugged in),
     // Comment out this while loop, or it will prevent the remaining code from running.
 
+    pinMode(CS_PIN, OUTPUT);
+    pinMode(MOSI, OUTPUT);
+    pinMode(SCK, OUTPUT);
+    pinMode(MISO, INPUT);
+    digitalWrite(CS_PIN, HIGH);
+
     Serial.println();
     Serial.println("BMV080 Example 4 - SPI");
 
-    if (bmv080.begin(15, SPI) == false) {
+    if (bmv080.begin(CS_PIN, SPI) == false) {
         Serial.println("SPI init failure. Check your jumpers and the hookup guide. Freezing...");
         while (1)
         ;

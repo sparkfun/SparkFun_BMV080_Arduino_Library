@@ -46,6 +46,7 @@ class SparkFunBMV080I2C : public sfeBmv080
     {
         // Setup Arudino I2C bus
         _theI2CBus.init(wirePort, address);
+        _theI2CBus.setByteOrder(SFETK_BIG_ENDIAN);
 
         // Begin the sensor
         sfeTkError_t rc = sfeBmv080::begin(&_theI2CBus);
@@ -72,16 +73,11 @@ class SparkFunBMV080SPI : public sfeBmv080
     /// @param spiPort The SPI port to use for communication
     /// @param spiSettings The SPI settings to use for communication
     /// @return True if successful, false otherwise
-    bool begin(uint8_t csPin, SPIClass &spiPort = SPI, SPISettings spiSettings = SPISettings(1000000, MSBFIRST, SPI_MODE0))
+    bool begin(uint8_t csPin, SPIClass &spiPort = SPI, SPISettings spiSettings = SPISettings(100000, MSBFIRST, SPI_MODE0))
     {
-        pinMode(csPin, OUTPUT);
-        pinMode(MOSI, OUTPUT);
-        pinMode(SCK, OUTPUT);
-        pinMode(MISO, INPUT);
-        digitalWrite(csPin, HIGH);
 
         // Setup Arduino SPI bus
-        _theSPIBus.init(spiPort, spiSettings, csPin);
+        _theSPIBus.init(spiPort, spiSettings, csPin, true);
 
         // Begin the sensor
         sfeTkError_t rc = sfeBmv080::begin(&_theSPIBus);

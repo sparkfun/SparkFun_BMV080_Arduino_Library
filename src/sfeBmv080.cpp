@@ -61,27 +61,40 @@ extern "C"
         if (handle == nullptr)
             return E_COMBRIDGE_ERROR_NULLPTR;
 
-        // Get our sparkfun toolkit bus object/interface
-        sfeTkIBus *theBus = (sfeTkIBus *)handle;
-
-        // From Bosch example:
-        //    16-bit header left shifted by 1, since the R/W bit (most significant bit) is passed along with the 7-bit
-        //     device address
-        uint16_t header_adjusted = header << 1;
+        sfeTkError_t rc;     
 
         // Our output var.
         size_t nRead = 0;
 
-        // Call the read reg 16 method on the bus.
-        sfeTkError_t rc = theBus->readRegister16Region(header_adjusted, (uint8_t *)payload, payload_length * 2, nRead);
+        // Get our sparkfun toolkit bus object/interface
+        sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
-        // Errors reading, not the expected number of bytes?
-        if (rc != kSTkErrOk || nRead != payload_length * 2)
-            return E_COMBRIDGE_ERROR_READ;
+        if(theBus->type() == kBusTypeI2C)
+        {
+            Serial.println("I2C");
+            header = header << 1;
+            // the toolkit is set to adjust payload byte order, so we don't need to do it here
+            // however, we do need to adjust the header byte order
+            //header = ((header << 8) & 0xff00) | ((header >> 8) & 0x00ff);            
+            // Call the read reg 16 method on the bus.
+            sfeTkError_t rc = theBus->readRegister16Region(header, (uint8_t*)payload, payload_length * 2, nRead);
+            // Errors reading, not the expected number of bytes?
+            if (rc != kSTkErrOk || nRead != payload_length * 2)
+                return E_COMBRIDGE_ERROR_READ;             
 
-        // from the Bosch example ...Need to swap the byte order
-        for (uint16_t i = 0; i < payload_length; i++)
-            payload[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
+            // from the Bosch example ...Need to swap the byte order
+            for (uint16_t i = 0; i < payload_length; i++)
+                payload[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
+        }
+        else
+        {
+            Serial.println("SPI");
+            // Call the read reg 16 method on the bus.
+            sfeTkError_t rc = theBus->readRegister16Region16(header, payload, payload_length, nRead);   
+            // Errors reading, not the expected number of bytes?
+            if (rc != kSTkErrOk || nRead != payload_length)
+                return E_COMBRIDGE_ERROR_READ;         
+        }
 
         return E_COMBRIDGE_OK;
     }
@@ -95,20 +108,34 @@ extern "C"
         if (handle == nullptr)
             return E_COMBRIDGE_ERROR_NULLPTR;
 
+        sfeTkError_t rc;
+
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
-        uint16_t header_adjusted = header << 1;
+        if(theBus->type() == kBusTypeI2C)
+        {
+            Serial.println("I2C");
+            header = header << 1;
+            // the toolkit is set to adjust payload byte order, so we don't need to do it here
+            // however, we do need to adjust the header byte order
+            //header = ((header << 8) & 0xff00) | ((header >> 8) & 0x00ff);            
+            
+            // Need to reverse the byte order - setup a buffer array
+            uint16_t payload_swapped[payload_length];
+            // swap the byte order
+            for (uint16_t i = 0; i < payload_length; i++)
+                payload_swapped[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
+            // call the write method on the bus
+            rc = theBus->writeRegister16Region(header, (uint8_t*)payload_swapped, payload_length * 2);
+        }
+        else
+        {
+            Serial.println("SPI");
+            // call the write method on the bus
+            rc = theBus->writeRegister16Region16(header, payload, payload_length);
+        }
 
-        // Need to reverse the byte order - setup a buffer array
-        uint16_t payload_swapped[payload_length];
 
-        // swap the byte order
-        for (uint16_t i = 0; i < payload_length; i++)
-            payload_swapped[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
-
-        // call the write method on the bus
-        sfeTkError_t rc =
-            theBus->writeRegister16Region(header_adjusted, (uint8_t *)payload_swapped, payload_length * 2);
 
         // okay, not okay?
         return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_WRITE;
