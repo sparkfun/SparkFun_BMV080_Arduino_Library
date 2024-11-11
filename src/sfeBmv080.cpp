@@ -70,7 +70,7 @@ extern "C"
         if(theBus->type() == kBusTypeI2C)
             header = header << 1; // I2C specific shift           
 
-        sfeTkError_t rc = theBus->readRegister16Region16(header, payload, payload_length, nRead);
+        sfeTkError_t rc = theBus->readRegister(header, payload, payload_length, nRead);
 
         if (rc != kSTkErrOk || nRead != payload_length)
             return E_COMBRIDGE_ERROR_READ;  
@@ -92,7 +92,7 @@ extern "C"
         if(theBus->type() == kBusTypeI2C) // I2C specific shift
             header = header << 1;
 
-        sfeTkError_t rc = theBus->writeRegister16Region16(header, payload, payload_length);
+        sfeTkError_t rc = theBus->writeRegister(header, payload, payload_length);
 
         // okay, not okay?
         return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_WRITE;
