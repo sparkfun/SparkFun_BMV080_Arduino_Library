@@ -110,28 +110,10 @@ extern "C"
 
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
-        if(theBus->type() == kBusTypeI2C)
-        {
+        if(theBus->type() == kBusTypeI2C) // I2C specific shift
             header = header << 1;
-            // the toolkit is set to adjust payload byte order, so we don't need to do it here
-            // however, we do need to adjust the header byte order
-            //header = ((header << 8) & 0xff00) | ((header >> 8) & 0x00ff);            
-            
-            // Need to reverse the byte order - setup a buffer array
-            // uint16_t payload_swapped[payload_length];
-            // // swap the byte order
-            // for (uint16_t i = 0; i < payload_length; i++)
-            //     payload_swapped[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
-            // call the write method on the bus
-            rc = theBus->writeRegister16Region16(header, payload, payload_length);
-        }
-        else
-        {
-            // call the write method on the bus
-            rc = theBus->writeRegister16Region16(header, payload, payload_length);
-        }
 
-
+        rc = theBus->writeRegister16Region16(header, payload, payload_length);
 
         // okay, not okay?
         return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_WRITE;
