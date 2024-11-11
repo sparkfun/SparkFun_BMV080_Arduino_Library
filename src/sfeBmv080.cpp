@@ -59,9 +59,7 @@ extern "C"
                                        uint16_t payload_length)
     {
         if (handle == nullptr)
-            return E_COMBRIDGE_ERROR_NULLPTR;
-
-        sfeTkError_t rc;     
+            return E_COMBRIDGE_ERROR_NULLPTR;   
 
         // Our output var.
         size_t nRead = 0;
@@ -70,29 +68,12 @@ extern "C"
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
         if(theBus->type() == kBusTypeI2C)
-        {
-            header = header << 1;
-            // the toolkit is set to adjust payload byte order, so we don't need to do it here
-            // however, we do need to adjust the header byte order
-            //header = ((header << 8) & 0xff00) | ((header >> 8) & 0x00ff);            
-            // Call the read reg 16 method on the bus.
-            sfeTkError_t rc = theBus->readRegister16Region(header, (uint8_t*)payload, payload_length * 2, nRead);
-            // Errors reading, not the expected number of bytes?
-            if (rc != kSTkErrOk || nRead != payload_length * 2)
-                return E_COMBRIDGE_ERROR_READ;             
+            header = header << 1; // I2C specific shift           
 
-            // from the Bosch example ...Need to swap the byte order
-            for (uint16_t i = 0; i < payload_length; i++)
-                payload[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
-        }
-        else
-        {
-            // Call the read reg 16 method on the bus.
-            sfeTkError_t rc = theBus->readRegister16Region16(header, payload, payload_length, nRead);   
-            // Errors reading, not the expected number of bytes?
-            if (rc != kSTkErrOk || nRead != payload_length)
-                return E_COMBRIDGE_ERROR_READ;         
-        }
+        sfeTkError_t rc = theBus->readRegister16Region16(header, payload, payload_length, nRead);
+
+        if (rc != kSTkErrOk || nRead != payload_length)
+            return E_COMBRIDGE_ERROR_READ;  
 
         return E_COMBRIDGE_OK;
     }
@@ -106,14 +87,12 @@ extern "C"
         if (handle == nullptr)
             return E_COMBRIDGE_ERROR_NULLPTR;
 
-        sfeTkError_t rc;
-
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
         if(theBus->type() == kBusTypeI2C) // I2C specific shift
             header = header << 1;
 
-        rc = theBus->writeRegister16Region16(header, payload, payload_length);
+        sfeTkError_t rc = theBus->writeRegister16Region16(header, payload, payload_length);
 
         // okay, not okay?
         return rc == kSTkErrOk ? E_COMBRIDGE_OK : E_COMBRIDGE_ERROR_WRITE;
