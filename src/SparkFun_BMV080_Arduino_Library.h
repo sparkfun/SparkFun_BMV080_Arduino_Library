@@ -46,7 +46,7 @@ class SparkFunBMV080I2C : public sfeBmv080
     {
         // Setup Arudino I2C bus
         _theI2CBus.init(wirePort, address);
-        _theI2CBus.setByteOrder(SFETK_BIG_ENDIAN);
+        _theI2CBus.setByteOrder(SFTK_MSBFIRST);
 
         // Begin the sensor
         sfeTkError_t rc = sfeBmv080::begin(&_theI2CBus);

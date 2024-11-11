@@ -118,12 +118,12 @@ extern "C"
             //header = ((header << 8) & 0xff00) | ((header >> 8) & 0x00ff);            
             
             // Need to reverse the byte order - setup a buffer array
-            uint16_t payload_swapped[payload_length];
-            // swap the byte order
-            for (uint16_t i = 0; i < payload_length; i++)
-                payload_swapped[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
+            // uint16_t payload_swapped[payload_length];
+            // // swap the byte order
+            // for (uint16_t i = 0; i < payload_length; i++)
+            //     payload_swapped[i] = ((payload[i] << 8) | (payload[i] >> 8)) & 0xffff;
             // call the write method on the bus
-            rc = theBus->writeRegister16Region(header, (uint8_t*)payload_swapped, payload_length * 2);
+            rc = theBus->writeRegister16Region16(header, payload, payload_length);
         }
         else
         {
