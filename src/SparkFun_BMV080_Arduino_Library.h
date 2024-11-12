@@ -5,10 +5,6 @@
     by Pete Lewis @SparkFun Electronics
     September 2024
 
-    Based on original source code written by
-        Fischer Moseley @ SparkFun Electronics
-        Original Creation Date: July 24, 2019
-
     This file implements the BMV080 class, prototyped in SparkFun_BMV080_Arduino_Library.h
 
     Development environment specifics:
@@ -25,11 +21,8 @@
 
 #pragma once
 
-// TODO: Add includes as needed (e.g. #include <Wire.h>, #include <SPI.h>)
 #include "sfeBmv080.h"
 #include <SparkFun_Toolkit.h>
-
-// #include "Arduino.h"
 
 // The BMV080 Bosch API requires a larger than usual stack size
 // In particular, bmv080_serve_interrupt is the culprit.

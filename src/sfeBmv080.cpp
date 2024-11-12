@@ -1,22 +1,18 @@
 /******************************************************************************
-    sfeQwiicBuzzer.h
-    SparkFun Qwiic Buzzer Library header file
+    sfeBmv080.cpp
+    SparkFun BMV080 Library CPP file
 
     by Pete Lewis @SparkFun Electronics
-    January 2024
-
-    Based on original source code written by
-    Fischer Moseley @ SparkFun Electronics
-    Original Creation Date: July 24, 2019
+    September 2024
 
     Development environment specifics:
-    IDE: Arduino 2.2.1
-    Hardware Platform: Arduino Uno/SparkFun Redboard
-    Qwiic Buzzer Version: v10
+    IDE: Arduino 2.3.3
+    Hardware Platform: SparkFun IoT Redboard ESP32
+    BMV080 Breakout HW Version: v01
 
     SPDX-License-Identifier: MIT
 
-    Copyright (c) 2023 SparkFun Electronics
+    Copyright (c) 2024 SparkFun Electronics
 
     Distributed as-is; no warranty is given.
 ******************************************************************************/
@@ -67,8 +63,8 @@ extern "C"
         // Get our sparkfun toolkit bus object/interface
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
-        if(theBus->type() == kBusTypeI2C)
-            header = header << 1; // I2C specific shift           
+        if(theBus->type() == kBusTypeI2C) // I2C specific shift
+            header = header << 1;         
 
         sfeTkError_t rc = theBus->readRegister(header, payload, payload_length, nRead);
 
@@ -113,21 +109,7 @@ extern "C"
     /* Custom function for consuming sensor readings */
     static void use_sensor_output(bmv080_output_t bmv080_output, void *callback_parameters)
     {
-        // data_ready_callback_count += 1;
-        // print_function_t print = (print_function_t)callback_parameters;
-
         ((sfeBmv080 *)callback_parameters)->setSensorValue(bmv080_output);
-
-        // Serial.println(bmv080_output.pm2_5);
-
-        // Serial.println("u");
-
-        // sfeBmv080::_sensorValue.pm2_5 = bmv080_output.pm2_5; // update the class variable with the new PM2.5 value
-        // setSensorValue(bmv080_output.pm2_5);
-        // sensorValue.pm2_5 = bmv080_output.pm2_5;
-        //  print("Runtime: %.2f s, PM2.5: %.0f ug/m^3, obstructed: %s, outside detection limits: %s\r\n",
-        //      bmv080_output.runtime_in_sec, bmv080_output.pm2_5, (bmv080_output.is_obstructed ? "yes" : "no"),
-        //      (bmv080_output.is_outside_detection_limits ? "yes" : "no"));
     }
 
     static void bmv080_service_routine(const bmv080_handle_t handle, void *callback_parameters)
@@ -236,11 +218,6 @@ bool sfeBmv080::open()
 
     // Open the device - pass in the data read, data write and delay functions callbacks. Note - the "secrom_handle_t"
     // is just a pointer to our Tookkit communication bus objects
-
-    // When sending a sercom handle of SPI to bmv_open, the pointer must be a struct that includes both the SPI port (instance) and the Settings
-    // This is because the Bosch API needs to know the SPI port and the settings for the SPI port
-
-
 
     bmv080_status_code_t status =
         bmv080_open(&bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,

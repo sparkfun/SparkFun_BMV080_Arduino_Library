@@ -29,7 +29,7 @@
   Serial.print it out at 115200 baud to serial monitor.
 
   Feel like supporting our work? Buy a board from SparkFun!
-  https://www.sparkfun.com/products/?????
+  https://www.sparkfun.com/products/26554
 */
 
 #include <Wire.h>
