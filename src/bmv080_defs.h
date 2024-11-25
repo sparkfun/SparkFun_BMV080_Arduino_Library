@@ -365,6 +365,16 @@ typedef enum
 } bmv080_duty_cycling_mode_t;
 
 /*!
+* @brief Measurement algorithm choices.
+*/
+typedef enum
+{
+    E_BMV080_MEASUREMENT_ALGORITHM_FAST_RESPONSE = 1,
+    E_BMV080_MEASUREMENT_ALGORITHM_BALANCED = 2,
+    E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION = 3
+} bmv080_measurement_algorithm_t;
+
+/*!
 * @brief Placeholder structure for extended sensor output information.
 */
 struct bmv080_extended_info_s;
@@ -374,26 +384,35 @@ struct bmv080_extended_info_s;
 */
 typedef struct
 {
+    /*! runtime_in_sec: estimate of the time passed since the start of the measurement, in seconds */
+    float runtime_in_sec;
+    /*! pm2_5_mass_concentration: PM2.5 value in ug/m3 */
+    float pm2_5_mass_concentration;
+    /*! pm1_mass_concentration: PM1 value in ug/m3 */
+    float pm1_mass_concentration;
+    /*! is_obstructed: flag to indicate whether the sensor is obstructed and cannot perform a valid measurement */
+    bool is_obstructed;
+    /*! is_outside_measurement_range: flag to indicate whether the PM2.5 concentration is 
+     * outside the specified measurement range (0..1000 ug/m3) 
+     */
+    bool is_outside_measurement_range;
     /*! reserved_0: for internal use only */
     float reserved_0;
     /*! reserved_1: for internal use only */
     float reserved_1;
     /*! reserved_2: for internal use only */
     float reserved_2;
-    /*! pm2_5: PM2.5 value in ug/m3 */
-    float pm2_5;
-    /*! runtime_in_sec: estimate of the time passed since the start of the measurement, in seconds */
-    float runtime_in_sec;
-    /*! is_obstructed: flag to indicate whether the sensor is obstructed and cannot perform a valid measurement */
-    bool is_obstructed;
-    /*! is_outside_detection_limits: flag to indicate whether the PM2.5 concentration is outside the detection limits 
-     *  and a valid measurement cannot be performed 
-     */
-    bool is_outside_detection_limits;
+    /*! reserved_3: for internal use only */
+    float reserved_3; 
+    /*! reserved_4: for internal use only */
+    float reserved_4; 
+    /*! reserved_5: for internal use only */
+    float reserved_5; 
+    /*! reserved_6: for internal use only */
+    float reserved_6;
     /*! extended_info: for internal use only */
     struct bmv080_extended_info_s *extended_info;
 }bmv080_output_t;
-
 
 /*********************************************************************************************************************
 * Callback definitions
@@ -463,9 +482,5 @@ typedef uint32_t(*bmv080_callback_tick_t)(void);
 * @param[inout] callback_parameters : user defined parameters to be passed to the callback function.
 */
 typedef void(*bmv080_callback_data_ready_t)(bmv080_output_t bmv080_output, void* callback_parameters);
-
-
-/* Function pointer to facilitate printing output / status information to the console */
-typedef int (*print_function_t)(const char *const _format, ...);
 
 #endif /* BMV080_DEFS_H_ */

@@ -141,7 +141,12 @@ sfeTkError_t sfeBmv080::begin(sfeTkIBus *theBus)
 
 float sfeBmv080::getPM25()
 {
-    return _sensorValue.pm2_5;
+    return _sensorValue.pm2_5_mass_concentration;
+}
+
+float sfeBmv080::getPM1()
+{
+    return _sensorValue.pm1_mass_concentration;
 }
 
 bool sfeBmv080::getIsObstructed()
@@ -152,10 +157,11 @@ bool sfeBmv080::getIsObstructed()
 void sfeBmv080::setSensorValue(bmv080_output_t bmv080_output)
 {
     _dataAvailable = true;
-    _sensorValue.pm2_5 = bmv080_output.pm2_5;
+    _sensorValue.pm2_5_mass_concentration = bmv080_output.pm2_5_mass_concentration;
+    _sensorValue.pm1_mass_concentration = bmv080_output.pm1_mass_concentration;
     _sensorValue.runtime_in_sec = bmv080_output.runtime_in_sec;
     _sensorValue.is_obstructed = bmv080_output.is_obstructed;
-    _sensorValue.is_outside_detection_limits = bmv080_output.is_outside_detection_limits;
+    _sensorValue.is_outside_measurement_range = bmv080_output.is_outside_measurement_range;
 }
 
 bool sfeBmv080::setMode(uint8_t mode)
@@ -470,6 +476,38 @@ bool sfeBmv080::setDoVibrationFiltering(bool do_vibration_filtering)
     if (bmv080_current_status != E_BMV080_OK)
     {
         printf("Error setting BMV080 Vibration Filtering: %d\n", bmv080_current_status);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+uint8_t sfeBmv080::getMeasurementAlgorithm()
+{
+    bmv080_measurement_algorithm_t measurement_algorithm;
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_get_parameter(bmv080_handle_class, "measurement_algorithm", (void *)&measurement_algorithm);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error getting BMV080 Measurement Algorithm: %d\n", bmv080_current_status);
+        return 0;
+    }
+    else
+    {
+        return (uint8_t)measurement_algorithm;
+    }
+}
+
+bool sfeBmv080::setMeasurementAlgorithm(uint8_t measurement_algorithm)
+{
+    bmv080_measurement_algorithm_t bmv080_measurement_algorithm = (bmv080_measurement_algorithm_t)measurement_algorithm;
+    bmv080_status_code_t bmv080_current_status =
+        bmv080_set_parameter(bmv080_handle_class, "measurement_algorithm", (void *)&bmv080_measurement_algorithm);
+    if (bmv080_current_status != E_BMV080_OK)
+    {
+        printf("Error setting BMV080 Measurement Algorithm: %d\n", bmv080_current_status);
         return false;
     }
     else

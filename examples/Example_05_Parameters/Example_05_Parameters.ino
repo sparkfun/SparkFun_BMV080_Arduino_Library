@@ -9,6 +9,7 @@
     distribution_id
     do_obstruction_detection
     do_vibration_filtering
+    measurement_algorithm
 
   After these parameters are read and set, This example shows how to use the 
   sensor in "continuous mode" to get particulate matter readings once every 
@@ -108,6 +109,7 @@ void getSetParameters(void)
     uint32_t distribution_id = 0;
     bool do_obstruction_detection = false;
     bool do_vibration_filtering = false;
+    uint8_t measurementAlgorithm = E_BMV080_MEASUREMENT_ALGORITHM_BALANCED;
 
     /***************************************************************************
      * 
@@ -155,6 +157,25 @@ void getSetParameters(void)
         Serial.println("false");
     }
 
+    /* Get default parameter "measurement_algorithm" */
+    measurementAlgorithm = bmv080.getMeasurementAlgorithm();
+    Serial.print("BMV080 parameter 'measurement_algorithm' READ: ");
+    switch (measurementAlgorithm)
+    {
+        case E_BMV080_MEASUREMENT_ALGORITHM_FAST_RESPONSE:
+            Serial.println("Fast Response");
+            break;
+        case E_BMV080_MEASUREMENT_ALGORITHM_BALANCED:
+            Serial.println("Balanced");
+            break;
+        case E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION:
+            Serial.println("High Precision");
+            break;
+        default:
+            Serial.println("Unknown");
+            break;
+    }
+
 
     /***************************************************************************
      * 
@@ -169,6 +190,7 @@ void getSetParameters(void)
     // distribution_id = 3;
     // do_obstruction_detection = true;
     // do_vibration_filtering = false;
+    // measurementAlgorithm = E_BMV080_MEASUREMENT_ALGORITHM_BALANCED;
 
     /* Set custom parameter "volumetric_mass_density" */
     if(bmv080.setVolumetricMassDensity(volumetric_mass_density) == true)
@@ -237,6 +259,31 @@ void getSetParameters(void)
     else
     {
         Serial.println("Error setting BMV080 parameter 'do_vibration_filtering'");
+    }
+
+    /* Set custom parameter "measurement_algorithm" */
+    if(bmv080.setMeasurementAlgorithm(measurementAlgorithm) == true)
+    {
+        Serial.print("BMV080 parameter 'measurement_algorithm' SET TO: ");
+        switch (measurementAlgorithm)
+        {
+            case E_BMV080_MEASUREMENT_ALGORITHM_FAST_RESPONSE:
+                Serial.println("Fast Response");
+                break;
+            case E_BMV080_MEASUREMENT_ALGORITHM_BALANCED:
+                Serial.println("Balanced");
+                break;
+            case E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION:
+                Serial.println("High Precision");
+                break;
+            default:
+                Serial.println("Unknown");
+                break;
+        }
+    }
+    else
+    {
+        Serial.println("Error setting BMV080 parameter 'measurement_algorithm'");
     }
 
     Serial.println();

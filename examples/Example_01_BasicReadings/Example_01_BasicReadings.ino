@@ -75,8 +75,11 @@ void loop()
     if (bmv080.dataAvailable())
     {
         float pm25 = bmv080.getPM25();
+        float pm1 = bmv080.getPM1();
 
         Serial.print(pm25);
+        Serial.print("\t");
+        Serial.print(pm1);
 
         if (bmv080.getIsObstructed() == true)
         {

@@ -89,6 +89,10 @@ class sfeBmv080
     /// @return The PM2.5 value as a float in ug/m3
     float getPM25();
 
+    /// @brief Get the PM1 value
+    /// @return The PM1 value as a float in ug/m3
+    float getPM1();
+
     /// @brief Get the obstruction status
     /// @return True if obstructed, false otherwise
     bool getIsObstructed();
@@ -154,6 +158,15 @@ class sfeBmv080
     /// @param do_vibration_filtering
     /// @return True if successful, false otherwise
     bool setDoVibrationFiltering(bool do_vibration_filtering);
+
+    /// @brief Get a parameter: "measurement_algorithm"
+    /// @return uint8_t measurement_algorithm
+    uint8_t getMeasurementAlgorithm();
+
+    /// @brief Set a parameter: "measurement_algorithm"
+    /// @param measurement_algorithm
+    /// @return True if successful, false otherwise
+    bool setMeasurementAlgorithm(uint8_t measurement_algorithm);
 
   private:
     bmv080_handle_t bmv080_handle_class = NULL;
