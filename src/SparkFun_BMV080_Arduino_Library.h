@@ -26,7 +26,11 @@
 
 // The BMV080 Bosch API requires a larger than usual stack size
 // In particular, bmv080_serve_interrupt is the culprit.
+// If we are an ESP32 architecture, then we need to increase the loop stack size
+// to 60KB. This is because the ESP32 has a 32KB stack size by default.
+#if defined(ESP32)
 SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
+#endif
 
 class SparkFunBMV080I2C : public sfeBmv080
 {
