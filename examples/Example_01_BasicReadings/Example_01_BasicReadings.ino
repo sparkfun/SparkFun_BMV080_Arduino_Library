@@ -30,6 +30,15 @@
 SparkFunBMV080I2C bmv080;           // Create an instance of the BMV080 class
 #define BMV080_ADDR 0x57 // SparkFun BMV080 Breakout defaults to 0x57
 
+// Some Dev boards have their QWIIC connector on Wire or Wire1
+// This #ifdef will help this sketch work across more products
+
+#ifdef ARDUINO_SPARKFUN_THINGPLUS_RP2040
+#define wirePort   Wire1
+#else
+#define wirePort  Wire
+#endif
+
 void setup()
 {
     Serial.begin(115200);
@@ -43,9 +52,9 @@ void setup()
     Serial.println();
     Serial.println("BMV080 Example 1 - Basic Readings");
 
-    Wire.begin();
+    wirePort.begin();
 
-    if (bmv080.begin(BMV080_ADDR, Wire) == false)
+    if (bmv080.begin(BMV080_ADDR, wirePort) == false)
     {
         Serial.println(
             "BMV080 not detected at default I2C address. Check your jumpers and the hookup guide. Freezing...");
@@ -54,7 +63,7 @@ void setup()
     }
     Serial.println("BMV080 found!");
 
-    // Wire.setClock(400000); //Increase I2C data rate to 400kHz
+    // wirePort.setClock(400000); //Increase I2C data rate to 400kHz
 
     /* Initialize the Sensor (read driver, open, reset, id etc.)*/
     bmv080.init();
