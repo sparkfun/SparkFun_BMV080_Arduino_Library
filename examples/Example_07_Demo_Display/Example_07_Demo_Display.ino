@@ -33,6 +33,10 @@
 SparkFunBMV080I2C bmv080;           // Create an instance of the BMV080 class
 #define BMV080_ADDR 0x57 // SparkFun BMV080 Breakout defaults to 0x57
 
+#include <SparkFun_Alphanumeric_Display.h> //Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_Alphanumeric_Display by SparkFun
+HT16K33 display;
+#define DISPLAY_ADDRESS 0x70 // Default I2C address when A0, A1 are floating
+
 // Some Dev boards have their QWIIC connector on Wire or Wire1
 // This #ifdef will help this sketch work across more products
 
@@ -41,10 +45,6 @@ SparkFunBMV080I2C bmv080;           // Create an instance of the BMV080 class
 #else
 #define wirePort  Wire
 #endif
-
-#include <SparkFun_Alphanumeric_Display.h> //Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_Alphanumeric_Display by SparkFun
-HT16K33 display;
-#define DISPLAY_ADDRESS 0x70 // Default I2C address when A0, A1 are floating
 
 void setup()
 {
