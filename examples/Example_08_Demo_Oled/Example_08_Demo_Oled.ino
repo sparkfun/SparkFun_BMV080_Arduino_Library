@@ -84,6 +84,12 @@ int height;
 // writeStaticDisplayItems() function
 int xPosPM25; 
 
+// Fuel Guage Specifics
+#include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h> // Click here to get the library: http://librarymanager/All#SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library
+SFE_MAX1704X lipo(MAX1704X_MAX17048); // Create a MAX17048
+double soc = 0; // Variable to keep track of LiPo state-of-charge (SOC)
+
+
 // Some Dev boards have their QWIIC connector on Wire or Wire1
 // This #ifdef will help this sketch work across more products
 
@@ -97,6 +103,8 @@ void setup()
 {
     pinMode(StatLedPin, OUTPUT);
     digitalWrite(StatLedPin, LOW);
+
+    lipo.disableDebugging(); // disable debugging for the MAX1704X fuel gauge
 
     Serial.begin(115200);
 
@@ -156,6 +164,20 @@ void setup()
         Serial.println("Error setting BMV080 mode");
         writeCenteredStringToDisplay("BMV080 Mode Error");
     }
+
+      // Set up the MAX17048 LiPo fuel gauge:
+    if (lipo.begin() == false) // Connect to the MAX17043 using the default wire port
+    {
+        Serial.println(F("MAX17048 not detected. Please check wiring. Freezing."));
+        writeCenteredStringToDisplay("MAX17048 Failure");
+        while (1)
+        ;
+    }
+    Serial.println("MAX17048 found!");
+
+    // Quick start restarts the MAX17043 in hopes of getting a more accurate
+	// guess for the SOC.
+	lipo.quickStart();
 }
 
 void loop()
@@ -177,6 +199,12 @@ void loop()
             Serial.print(pm25Value);
             writeStaticDisplayItems();
             writeValuesToDisplay();
+            // lipo.getSOC() returns the estimated state of charge (e.g. 79%)
+            soc = lipo.getSOC();
+            Serial.print("\tBatt: ");
+            Serial.print(soc); // Print the battery state of charge
+            Serial.print(" %");
+            writeBatteryLevelToDisplay();
             myOLED.display(); // actually command the display to show the scene
         }
 
@@ -310,4 +338,86 @@ void toggleHeartbeat()
     }
 
     myOLED.display();
+}
+
+// Write the battery level to the display
+// Create a rectangular battery level indicator on the bottom right side of the screen
+// fill in the rectangle with a percentage of the battery level
+// each section of the rectangle represents 25% of the battery level
+void writeBatteryLevelToDisplay()
+{
+    // calculate the x position of the battery level indicator
+    // this is the right side of the screen minus 14 pixels
+    int xPosBatteryLevelIndicator = (myOLED.getWidth()- 14);
+
+    // draw the battery level indicator outline
+    // this rectangle is an outline of the battery level indicator
+    // it looks like a small battery
+    // it is 6 pixels tall and 12 pixels wide
+    // the inside of the rectangle is not filled in
+    // the rectangle is drawn in white
+    // the inside of the rectangle will be filled in with the battery level
+    myOLED.rectangle(xPosBatteryLevelIndicator, myOLED.getHeight() - 6, 12, 6, 1);
+
+    // draw the end shape of the battery level indicator
+    // this makes it look like a traditional battery level indicator
+    // like the end of a AA battery
+    // draw a filled in rectangle that will be the end shape of the battery level indicator
+    // it is 2 pixels tall and 2 pixels wide
+    // it is drawn in white
+    myOLED.rectangle(xPosBatteryLevelIndicator + 12, myOLED.getHeight() - 4, 2, 2, 1);
+
+    // draw the inner sections of the battery level indicator
+    // There are 3 blocks inside the battery level indicator
+    // each block represents 33% of the battery level
+    // the left most block represents 0-33% of the battery level
+    // the middle block represents 34-66% of the battery level
+    // the right most block represents 67-100% of the battery level
+    // the blocks are filled in with white
+    // the blocks are 2 pixels tall and 2 pixels wide
+    // there is a 1 pixel gap between each block
+
+    // calculate the y position of the battery level indicator blocks
+    // this is the bottom of the screen minus 4 pixels
+    int yPosBatteryLevelBlocks = myOLED.getHeight() - 4;
+
+    // calculate the x position of the left most block
+    // this is the right side of the screen minus 12 pixels
+    int xPosLeftBlock = (myOLED.getWidth() - 12);
+
+    // calculate the x position of the middle block
+    // this is the right side of the screen minus 9 pixels
+    int xPosMiddleBlock = (myOLED.getWidth() - 9);
+
+    // calculate the x position of the right most block
+    // this is the right side of the screen minus 6 pixels
+    int xPosRightBlock = (myOLED.getWidth() - 6);
+
+    // write all 3 battery block indicators as black rectangles
+    myOLED.rectangle(xPosLeftBlock, yPosBatteryLevelBlocks, 2, 2, 0);
+    myOLED.rectangle(xPosMiddleBlock, yPosBatteryLevelBlocks, 2, 2, 0);
+    myOLED.rectangle(xPosRightBlock, yPosBatteryLevelBlocks, 2, 2, 0);
+
+    // if the battery level is at least 33%
+    // fill in the left most block
+    if (soc > 32)
+    {
+        myOLED.rectangle(xPosLeftBlock, yPosBatteryLevelBlocks, 2, 2, 1);
+    }
+
+    // if the battery level is between 34% and 66%
+    // fill in the middle block
+    if (soc > 33)
+    {
+        myOLED.rectangle(xPosMiddleBlock, yPosBatteryLevelBlocks, 2, 2, 1);
+    }
+
+    // if the battery level is greater than 66%
+    // fill in the right most block
+    if (soc > 66)
+    {
+        myOLED.rectangle(xPosRightBlock, yPosBatteryLevelBlocks, 2, 2, 1);
+    }
+
+
 }
