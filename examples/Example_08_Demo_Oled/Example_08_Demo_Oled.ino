@@ -123,7 +123,7 @@ void setup()
     if (myOLED.begin(wirePort) == false)
     {
         Serial.println("OLED Device begin failed. Freezing...");
-        writeCenteredStringToDisplay("OLED Failure");
+        writeCenteredStringToDisplay("OLED Failure", true);
         while (true)
             ;
     }
@@ -141,12 +141,12 @@ void setup()
     {
         Serial.println(
             "BMV080 not detected at default I2C address. Check your jumpers and the hookup guide. Freezing...");
-            writeCenteredStringToDisplay("BMV080 Failure");
+            writeCenteredStringToDisplay("BMV080 Failure", true);
         while (1)
             ;
     }
     Serial.println("BMV080 found!");
-    writeCenteredStringToDisplay("BMV080 Found");
+    writeCenteredStringToDisplay("BMV080 Found", true);
 
     // wirePort.setClock(400000); //Increase I2C data rate to 400kHz
 
@@ -157,19 +157,19 @@ void setup()
     if (bmv080.setMode(SFE_BMV080_MODE_CONTINUOUS) == true)
     {
         Serial.println("BMV080 set to continuous mode");
-        writeCenteredStringToDisplay("Continuous Mode Set");
+        writeCenteredStringToDisplay("Continuous Mode Set", true);
     }
     else
     {
         Serial.println("Error setting BMV080 mode");
-        writeCenteredStringToDisplay("BMV080 Mode Error");
+        writeCenteredStringToDisplay("BMV080 Mode Error", true);
     }
 
       // Set up the MAX17048 LiPo fuel gauge:
     if (lipo.begin() == false) // Connect to the MAX17043 using the default wire port
     {
         Serial.println(F("MAX17048 not detected. Please check wiring. Freezing."));
-        writeCenteredStringToDisplay("MAX17048 Failure");
+        writeCenteredStringToDisplay("MAX17048 Failure", true);
         while (1)
         ;
     }
@@ -187,25 +187,25 @@ void loop()
         pm25Value = bmv080.getPM25();
         pm1Value = bmv080.getPM1();
 
+        Serial.print(pm1Value);
+        Serial.print("\t");
+        Serial.print(pm25Value);
+        writeStaticDisplayItems();
+        writeValuesToDisplay();
+        // lipo.getSOC() returns the estimated state of charge (e.g. 79%)
+        soc = lipo.getSOC();
+        Serial.print("\tBatt: ");
+        Serial.print(soc); // Print the battery state of charge
+        Serial.print(" %");
+        writeBatteryLevelToDisplay();
+        myOLED.display(); // actually command the display to show the scene
+
         if (bmv080.getIsObstructed() == true)
         {
             Serial.print("\tObstructed");
-            writeCenteredStringToDisplay("Obstructed");
-        }
-        else
-        {
-            Serial.print(pm1Value);
-            Serial.print("\t");
-            Serial.print(pm25Value);
-            writeStaticDisplayItems();
-            writeValuesToDisplay();
-            // lipo.getSOC() returns the estimated state of charge (e.g. 79%)
-            soc = lipo.getSOC();
-            Serial.print("\tBatt: ");
-            Serial.print(soc); // Print the battery state of charge
-            Serial.print(" %");
-            writeBatteryLevelToDisplay();
-            myOLED.display(); // actually command the display to show the scene
+            writeObstructedBoarder();
+            writeCenteredStringToDisplay("Obstructed", false); // don't clear the screen
+            // so the obstructed message is displayed on top of the PM values
         }
 
         Serial.println();
@@ -240,7 +240,7 @@ void writeStaticDisplayItems()
     // clear the screen
     myOLED.erase();
 
-    myOLED.setFont(&QW_FONT_5X7);
+    myOLED.setFont(&QW_FONT_8X16);
 
     // draw the PM1 static text label
     // calculate the x position of the PM1 label
@@ -274,21 +274,28 @@ void writeValuesToDisplay()
     // calculate the x position of the PM1 value
     // we want it to be centered in the left half of the screen
     int xPosPM1Value = (myOLED.getWidth() / 4) - (myOLED.getStringWidth(toPrint) / 2);
-    myOLED.text(xPosPM1Value, 10, toPrint, 1);
+
+    // calculate the y start position of the PM1 value
+    // we want the bottom of the text to align with the bottom of the screen
+    int yPosPM1Value = myOLED.getHeight() - myOLED.getStringHeight(toPrint);
+    myOLED.text(xPosPM1Value, yPosPM1Value, toPrint, 1);
 
     // draw the PM2.5 value
     // calculate the x position of the PM2.5 value
     // we want it to be centered in the right half of the screen
     int xPosPM25Value = (myOLED.getWidth() / 4) * 3 - (myOLED.getStringWidth(toPrint) / 2);
     toPrint = String(int(pm25Value));
-    myOLED.text(xPosPM25Value, 10, toPrint, 1);
+    myOLED.text(xPosPM25Value, yPosPM1Value, toPrint, 1); // same y position as the PM1 value
 }
 
 // Write a string to the display that is centered horizontally and vertically
-void writeCenteredStringToDisplay(String toPrint)
+void writeCenteredStringToDisplay(String toPrint, bool clearScreen)
 {
     // clear the screen
-    myOLED.erase();
+    if(clearScreen)
+    {
+        myOLED.erase();
+    }
 
     // set the font to the 8x16 font
     myOLED.setFont(&QW_FONT_5X7);
@@ -418,6 +425,18 @@ void writeBatteryLevelToDisplay()
     {
         myOLED.rectangle(xPosRightBlock, yPosBatteryLevelBlocks, 2, 2, 1);
     }
+}
 
+void writeObstructedBoarder()
+{
+    // set fort to 5x7
+    myOLED.setFont(&QW_FONT_5X7);
 
+    int xPosObstructed = (myOLED.getWidth() / 2) - (myOLED.getStringWidth("Obstructed") / 2) - 2;
+    int yPosObstructed = (myOLED.getHeight() / 2) - (myOLED.getStringHeight("Obstructed") / 2) - 2;
+    int widthObstructed = myOLED.getStringWidth("Obstructed") + 4;
+    int heightObstructed = myOLED.getStringHeight("Obstructed") + 4;
+
+    // draw the black filled rectangle
+    myOLED.rectangleFill(xPosObstructed, yPosObstructed, widthObstructed, heightObstructed, 0);
 }
