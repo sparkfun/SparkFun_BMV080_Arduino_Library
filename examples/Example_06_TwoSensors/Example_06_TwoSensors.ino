@@ -121,26 +121,26 @@ void setup()
 
 void loop()
 {
-    if (bmv080.dataAvailable())
+    if (bmv080.isDataAvailable())
     {
-        pm25 = bmv080.getPM25();
-        isObstructed = bmv080.getIsObstructed();
+        pm25 = bmv080.PM25();
+        isObstructed = bmv080.isObstructed();
         newDataAvailable = true;
         //Serial.println("Sensor 1 data available");
     }
     delay(200); // needs a ~200ms delay in between talking to each sensor
 
-    if (bmv080_2.dataAvailable())
+    if (bmv080_2.isDataAvailable())
     {
-        pm25_2 = bmv080_2.getPM25();
-        isObstructed2 = bmv080_2.getIsObstructed();
+        pm25_2 = bmv080_2.PM25();
+        isObstructed2 = bmv080_2.isObstructed();
         newDataAvailable2 = true;
         //Serial.println("Sensor 2 data available");
     }
 
     delay(200); // needs a ~200ms delay in between talking to each sensor
 
-    if (newDataAvailable & newDataAvailable2)
+    if (newDataAvailable && newDataAvailable2)
     {
         //Serial.print("Sensor 1: ");
 

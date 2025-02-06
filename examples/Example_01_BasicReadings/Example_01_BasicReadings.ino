@@ -81,16 +81,16 @@ void setup()
 
 void loop()
 {
-    if (bmv080.dataAvailable())
+    if (bmv080.isDataAvailable())
     {
-        float pm25 = bmv080.getPM25();
-        float pm1 = bmv080.getPM1();
+        float pm25 = bmv080.PM25();
+        float pm1 = bmv080.PM1();
 
         Serial.print(pm25);
         Serial.print("\t");
         Serial.print(pm1);
 
-        if (bmv080.getIsObstructed() == true)
+        if (bmv080.isObstructed() == true)
         {
             Serial.print("\tObstructed");
         }

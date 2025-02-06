@@ -182,10 +182,10 @@ void setup()
 
 void loop()
 {
-    if (bmv080.dataAvailable())
+    if (bmv080.isDataAvailable())
     {
-        pm25Value = bmv080.getPM25();
-        pm1Value = bmv080.getPM1();
+        pm25Value = bmv080.PM25();
+        pm1Value = bmv080.PM1();
 
         Serial.print(pm1Value);
         Serial.print("\t");
@@ -200,7 +200,7 @@ void loop()
         writeBatteryLevelToDisplay();
         myOLED.display(); // actually command the display to show the scene
 
-        if (bmv080.getIsObstructed() == true)
+        if (bmv080.isObstructed() == true)
         {
             Serial.print("\tObstructed");
             writeObstructedBoarder();

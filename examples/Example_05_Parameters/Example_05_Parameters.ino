@@ -91,13 +91,13 @@ void setup()
 
 void loop()
 {
-    if(bmv080.dataAvailable())
+    if(bmv080.isDataAvailable())
     {
-        float pm25 = bmv080.getPM25();
+        float pm25 = bmv080.PM25();
 
         Serial.print(pm25);
 
-        if(bmv080.getIsObstructed() == true)
+        if(bmv080.isObstructed() == true)
         {
             Serial.print("\tObstructed");
         }
@@ -128,22 +128,22 @@ void getSetParameters(void)
 
 
     /* Get default parameter "volumetric_mass_density" */
-    volumetric_mass_density = bmv080.getVolumetricMassDensity();
+    volumetric_mass_density = bmv080.volumetricMassDensity();
     Serial.print("BMV080 parameter 'volumetric_mass_density' READ: ");
     Serial.println(volumetric_mass_density);
 
     /* Get default parameter "integration_time" */
-    integration_time = bmv080.getIntegrationTime();
+    integration_time = bmv080.integrationTime();
     Serial.print("BMV080 parameter 'integration_time' READ: ");
     Serial.println(integration_time);
 
     /* Get default parameter "distribution_id" */
-    distribution_id = bmv080.getDistributionId();
+    distribution_id = bmv080.distributionId();
     Serial.print("BMV080 parameter 'distribution_id' READ: ");
     Serial.println(distribution_id);
 
     /* Get default parameter "do_obstruction_detection" */
-    do_obstruction_detection = bmv080.getDoObstructionDetection();
+    do_obstruction_detection = bmv080.doObstructionDetection();
     Serial.print("BMV080 parameter 'do_obstruction_detection' READ: ");
     if(do_obstruction_detection == true)
     {
@@ -155,7 +155,7 @@ void getSetParameters(void)
     }
 
     /* Get default parameter "do_vibration_filtering" */
-    do_vibration_filtering = bmv080.getDoVibrationFiltering();
+    do_vibration_filtering = bmv080.doVibrationFiltering();
     Serial.print("BMV080 parameter 'do_vibration_filtering' READ: ");
     if(do_vibration_filtering == true)
     {
@@ -167,7 +167,7 @@ void getSetParameters(void)
     }
 
     /* Get default parameter "measurement_algorithm" */
-    measurementAlgorithm = bmv080.getMeasurementAlgorithm();
+    measurementAlgorithm = bmv080.measurementAlgorithm();
     Serial.print("BMV080 parameter 'measurement_algorithm' READ: ");
     switch (measurementAlgorithm)
     {

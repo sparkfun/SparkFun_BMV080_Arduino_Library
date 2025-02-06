@@ -100,14 +100,14 @@ void setup()
 
 void loop()
 {
-    if (bmv080.dataAvailable())
+    if (bmv080.isDataAvailable())
     {
-        float pm25 = bmv080.getPM25();
+        float pm25 = bmv080.PM25();
 
         Serial.print(pm25);
         display.print(int(pm25));
 
-        if (bmv080.getIsObstructed() == true)
+        if (bmv080.isObstructed() == true)
         {
             Serial.print("\tObstructed");
             display.print("Obst");
