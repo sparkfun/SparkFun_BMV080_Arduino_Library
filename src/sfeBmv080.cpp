@@ -21,7 +21,7 @@
 #include "bmv080.h"
 #include "bmv080_defs.h"
 
-#define SPI_CLK_FREQ          ((uint32_t)(1e6))
+#define SPI_CLK_FREQ ((uint32_t)(1e6))
 
 // Some communication functions used with the system. These are from the original code from
 // Bosch  - so keeping them the same. It is unclear if the library they provide depends on these
@@ -29,15 +29,15 @@
 
 #define E_COMBRIDGE_OK ((int8_t)0)
 /*! -1: Status codes returned when memory allocation fails */
-#define E_COMBRIDGE_ERROR_MEMORY_ALLOCATION ((int8_t) - 1)
+#define E_COMBRIDGE_ERROR_MEMORY_ALLOCATION ((int8_t)-1)
 /*! -2: Status codes returned when the read operation fails */
-#define E_COMBRIDGE_ERROR_READ ((int8_t) - 2)
+#define E_COMBRIDGE_ERROR_READ ((int8_t)-2)
 /*! -3: Status codes returned when the write operation fails */
-#define E_COMBRIDGE_ERROR_WRITE ((int8_t) - 3)
+#define E_COMBRIDGE_ERROR_WRITE ((int8_t)-3)
 /*! -4: Status codes returned when writing the header fails */
-#define E_COMBRIDGE_ERROR_WRITE_HEADER ((int8_t) - 4)
+#define E_COMBRIDGE_ERROR_WRITE_HEADER ((int8_t)-4)
 /*! -5:  Status codes returned when a reference is null */
-#define E_COMBRIDGE_ERROR_NULLPTR ((int8_t) - 5)
+#define E_COMBRIDGE_ERROR_NULLPTR ((int8_t)-5)
 
 // C function used in this library only - so static
 
@@ -55,7 +55,7 @@ extern "C"
                                        uint16_t payload_length)
     {
         if (handle == nullptr)
-            return E_COMBRIDGE_ERROR_NULLPTR;   
+            return E_COMBRIDGE_ERROR_NULLPTR;
 
         // Our output var.
         size_t nRead = 0;
@@ -63,13 +63,13 @@ extern "C"
         // Get our sparkfun toolkit bus object/interface
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
-        if(theBus->type() == kBusTypeI2C) // I2C specific shift
-            header = header << 1;         
+        if (theBus->type() == kBusTypeI2C) // I2C specific shift
+            header = header << 1;
 
         sfeTkError_t rc = theBus->readRegister(header, payload, payload_length, nRead);
 
         if (rc != kSTkErrOk || nRead != payload_length)
-            return E_COMBRIDGE_ERROR_READ;  
+            return E_COMBRIDGE_ERROR_READ;
 
         return E_COMBRIDGE_OK;
     }
@@ -85,7 +85,7 @@ extern "C"
 
         sfeTkIBus *theBus = (sfeTkIBus *)handle;
 
-        if(theBus->type() == kBusTypeI2C) // I2C specific shift
+        if (theBus->type() == kBusTypeI2C) // I2C specific shift
             header = header << 1;
 
         sfeTkError_t rc = theBus->writeRegister(header, payload, payload_length);
@@ -104,6 +104,7 @@ extern "C"
         return E_COMBRIDGE_OK;
     }
 
+    //---------------------------------------------------------------------
     // This function is just used in this file, so declaring it static
 
     /* Custom function for consuming sensor readings */
@@ -112,6 +113,7 @@ extern "C"
         ((sfeBmv080 *)callback_parameters)->setSensorValue(bmv080_output);
     }
 
+    //---------------------------------------------------------------------
     static void bmv080_service_routine(const bmv080_handle_t handle, void *callback_parameters)
     {
         /* The interrupt is served by the BMV080 sensor driver */
@@ -119,6 +121,7 @@ extern "C"
             bmv080_serve_interrupt(handle, (bmv080_callback_data_ready_t)use_sensor_output, callback_parameters);
         if (bmv080_current_status != E_BMV080_OK)
         {
+            // TODO: libraries should not output text by default, need to add a debug mode/flag to library?
             printf("Fetching measurement data failed with BMV080 status %d\r\n", (int32_t)bmv080_current_status);
         }
     }
@@ -127,6 +130,7 @@ extern "C"
 }
 #endif
 
+//---------------------------------------------------------------------
 sfeTkError_t sfeBmv080::begin(sfeTkIBus *theBus)
 {
     // Nullptr check
@@ -139,31 +143,53 @@ sfeTkError_t sfeBmv080::begin(sfeTkIBus *theBus)
     return kSTkErrOk;
 }
 
-float sfeBmv080::getPM25()
+//---------------------------------------------------------------------
+float sfeBmv080::PM25()
 {
     return _sensorValue.pm2_5_mass_concentration;
 }
 
-float sfeBmv080::getPM1()
+//---------------------------------------------------------------------
+float sfeBmv080::PM1()
 {
     return _sensorValue.pm1_mass_concentration;
 }
 
-bool sfeBmv080::getIsObstructed()
+//---------------------------------------------------------------------
+bool sfeBmv080::isObstructed()
 {
     return _sensorValue.is_obstructed;
 }
 
+//---------------------------------------------------------------------
 void sfeBmv080::setSensorValue(bmv080_output_t bmv080_output)
 {
+    // TODO: should here be a mode where the library user can set register a callback function to handle the data?
+    //       This way the end user can get all the sensor data at once - possible issue is stack/re-entrancy
     _dataAvailable = true;
-    _sensorValue.pm2_5_mass_concentration = bmv080_output.pm2_5_mass_concentration;
-    _sensorValue.pm1_mass_concentration = bmv080_output.pm1_mass_concentration;
-    _sensorValue.runtime_in_sec = bmv080_output.runtime_in_sec;
-    _sensorValue.is_obstructed = bmv080_output.is_obstructed;
-    _sensorValue.is_outside_measurement_range = bmv080_output.is_outside_measurement_range;
+
+    // cache the latest sensor values - copy output to our class variable
+    _sensorValue = bmv080_output;
 }
 
+//---------------------------------------------------------------------
+bool sfeBmv080::sensorValue(bmv080_output_t *bmv080_output, bool update_data /* default is true*/)
+{
+    if (!bmv080_output)
+        return false;
+
+    // Get the latest sensor data ...
+    if (update_data)
+    {
+        _dataAvailable = false;
+        bmv080_service_routine(bmv080_handle_class, this);
+    }
+    if (_dataAvailable)
+        *bmv080_output = _sensorValue;
+    return _dataAvailable;
+}
+
+//---------------------------------------------------------------------
 bool sfeBmv080::setMode(uint8_t mode)
 {
     bmv080_status_code_t bmv080_current_status; // return status from the Bosch API function
@@ -190,9 +216,11 @@ bool sfeBmv080::setMode(uint8_t mode)
     }
 }
 
-bool sfeBmv080::dataAvailable()
+//---------------------------------------------------------------------
+bool sfeBmv080::isDataAvailable()
 {
     bmv080_service_routine(bmv080_handle_class, this);
+    // TODO: What is the logic here?  The expectation is that a user calls this before accessing any data?
     if (_dataAvailable == true)
     {
         _dataAvailable = false;
@@ -202,6 +230,7 @@ bool sfeBmv080::dataAvailable()
         return false;
 }
 
+//---------------------------------------------------------------------
 // Our init method
 bool sfeBmv080::init()
 {
@@ -215,8 +244,7 @@ bool sfeBmv080::init()
     return true;
 }
 
-
-
+//---------------------------------------------------------------------
 bool sfeBmv080::open()
 {
     if (_theBus == nullptr)
@@ -257,7 +285,7 @@ bool sfeBmv080::reset()
     }
 }
 
-bool sfeBmv080::getDriverVersion()
+bool sfeBmv080::driverVersion()
 {
     uint16_t major = 0;
     uint16_t minor = 0;
@@ -278,7 +306,7 @@ bool sfeBmv080::getDriverVersion()
     return true;
 }
 
-bool sfeBmv080::getID()
+bool sfeBmv080::ID()
 {
     char id[13];
     memset(id, 0x00, 13);
@@ -296,7 +324,7 @@ bool sfeBmv080::getID()
     }
 }
 
-uint16_t sfeBmv080::getDutyCyclingPeriod()
+uint16_t sfeBmv080::dutyCyclingPeriod()
 {
     uint16_t duty_cycling_period = 0;
     bmv080_status_code_t bmv080_current_status =
@@ -329,13 +357,14 @@ bool sfeBmv080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
     }
 }
 
-float sfeBmv080::getVolumetricMassDensity()
+float sfeBmv080::volumetricMassDensity()
 {
     float volumetric_mass_density = 0.0;
     bmv080_status_code_t bmv080_current_status =
         bmv080_get_parameter(bmv080_handle_class, "volumetric_mass_density", (void *)&volumetric_mass_density);
     if (bmv080_current_status != E_BMV080_OK)
     {
+// TODO: libraries should not output text by default, need to add a debug mode/flag to library?        
         printf("Error getting BMV080 Volumetric Mass Density: %d\n", bmv080_current_status);
         return 0.0;
     }
@@ -351,6 +380,7 @@ bool sfeBmv080::setVolumetricMassDensity(float volumetric_mass_density)
         bmv080_set_parameter(bmv080_handle_class, "volumetric_mass_density", (void *)&volumetric_mass_density);
     if (bmv080_current_status != E_BMV080_OK)
     {
+        // TODO: libraries should not output text by default, need to add a debug mode/flag to library?
         printf("Error setting BMV080 Volumetric Mass Density: %d\n", bmv080_current_status);
         return false;
     }
@@ -360,13 +390,13 @@ bool sfeBmv080::setVolumetricMassDensity(float volumetric_mass_density)
     }
 }
 
-float sfeBmv080::getIntegrationTime()
+float sfeBmv080::integrationTime()
 {
     float integration_time = 0.0;
     bmv080_status_code_t bmv080_current_status =
         bmv080_get_parameter(bmv080_handle_class, "integration_time", (void *)&integration_time);
     if (bmv080_current_status != E_BMV080_OK)
-    {
+    { // todo -- no printf in library
         printf("Error getting BMV080 Integration Time: %d\n", bmv080_current_status);
         return 0.0;
     }
@@ -391,7 +421,7 @@ bool sfeBmv080::setIntegrationTime(float integration_time)
     }
 }
 
-uint32_t sfeBmv080::getDistributionId()
+uint32_t sfeBmv080::distributionId()
 {
     uint32_t distribution_id = 0;
     bmv080_status_code_t bmv080_current_status =
@@ -422,7 +452,7 @@ bool sfeBmv080::setDistributionId(uint32_t distribution_id)
     }
 }
 
-bool sfeBmv080::getDoObstructionDetection()
+bool sfeBmv080::doObstructionDetection()
 {
     bool do_obstruction_detection = false;
     bmv080_status_code_t bmv080_current_status =
@@ -453,7 +483,7 @@ bool sfeBmv080::setDoObstructionDetection(bool do_obstruction_detection)
     }
 }
 
-bool sfeBmv080::getDoVibrationFiltering()
+bool sfeBmv080::doVibrationFiltering()
 {
     bool do_vibration_filtering = false;
     bmv080_status_code_t bmv080_current_status =
@@ -484,7 +514,7 @@ bool sfeBmv080::setDoVibrationFiltering(bool do_vibration_filtering)
     }
 }
 
-uint8_t sfeBmv080::getMeasurementAlgorithm()
+uint8_t sfeBmv080::measurementAlgorithm()
 {
     bmv080_measurement_algorithm_t measurement_algorithm;
     bmv080_status_code_t bmv080_current_status =

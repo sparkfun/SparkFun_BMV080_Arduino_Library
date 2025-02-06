@@ -33,7 +33,8 @@
 #define SFE_BMV080_MODE_CONTINUOUS 0
 #define SFE_BMV080_MODE_DUTY_CYCLE 1
 
-#define SPI_CLK_FREQ          ((uint32_t)(1e6)) // 1 MHz
+// #define SPI_CLK_FREQ          ((uint32_t)(1e6)) // 1 MHz
+#define SPI_CLK_FREQ          1000000u // 1 MHz
 
 typedef struct
 {
@@ -66,7 +67,7 @@ class sfeBmv080
 
     /// @brief Get the version information of this sensor driver.
     /// @return True if successful, false otherwise
-    bool getDriverVersion();
+    bool driverVersion();
 
     /// @brief Open a sensor unit by initializing a new handle.
     /// @return True if successful, false otherwise
@@ -78,7 +79,7 @@ class sfeBmv080
 
     /// @brief Get the ID of the sensor
     /// @return True if successful, false otherwise
-    bool getID();
+    bool ID();
 
     /// @brief Set the mode of the sensor
     /// @param mode SFE_BMV080_MODE_CONTINUOUS, SFE_BMV080_MODE_DUTY_CYCLE
@@ -87,27 +88,33 @@ class sfeBmv080
 
     /// @brief Get the PM2.5 value
     /// @return The PM2.5 value as a float in ug/m3
-    float getPM25();
+    float PM25();
 
     /// @brief Get the PM1 value
     /// @return The PM1 value as a float in ug/m3
-    float getPM1();
+    float PM1();
 
     /// @brief Get the obstruction status
     /// @return True if obstructed, false otherwise
-    bool getIsObstructed();
+    bool isObstructed();
 
     void setSensorValue(bmv080_output_t bmv080_output);
 
+    /// @brief Get the sensor value
+    /// @param bmv080_output pointer to value output struct
+    /// @param update_data if true, update the data from the sensor
+    /// @return true on success, false if no data is available
+    bool sensorValue(bmv080_output_t *bmv080_output, bool update_data = true);
+
     /// @brief Check if new data is available
     /// @details This function should be called in the main loop to check if new data is available
-    /// @details If new data is available, the data can be read using getPM25 and getIsObstructed
+    /// @details If new data is available, the data can be read using PM25 and isObstructed
     /// @return True if new data is available, false otherwise
-    bool dataAvailable();
+    bool isDataAvailable();
 
     /// @brief Get the duty cycling period
     /// @return The duty cycling period in seconds
-    uint16_t getDutyCyclingPeriod();
+    uint16_t dutyCyclingPeriod();
 
     /// @brief Set the duty cycling period
     /// @param period The duty cycling period in seconds
@@ -116,7 +123,7 @@ class sfeBmv080
 
     /// @brief Get a parameter: "volumetric_mass_density"
     /// @return float volumetric_mass_density
-    float getVolumetricMassDensity();
+    float volumetricMassDensity();
 
     /// @brief Set a parameter: "volumetric_mass_density"
     /// @param volumetric_mass_density
@@ -125,7 +132,7 @@ class sfeBmv080
 
     /// @brief Get a parameter: "integration_time"
     /// @return float integration_time
-    float getIntegrationTime();
+    float integrationTime();
 
     /// @brief Set a parameter: "integration_time"
     /// @param integration_time
@@ -134,7 +141,7 @@ class sfeBmv080
 
     /// @brief Get a parameter: "distribution_id"
     /// @return uint32_t distribution_id
-    uint32_t getDistributionId();
+    uint32_t distributionId();
 
     /// @brief Set a parameter: "distribution_id"
     /// @param distribution_id
@@ -143,7 +150,7 @@ class sfeBmv080
 
     /// @brief Get a parameter: "do_obstruction_detection"
     /// @return bool do_obstruction_detection
-    bool getDoObstructionDetection();
+    bool doObstructionDetection();
 
     /// @brief Set a parameter: "do_obstruction_detection"
     /// @param do_obstruction_detection
@@ -152,7 +159,7 @@ class sfeBmv080
 
     /// @brief Get a parameter: "do_vibration_filtering"
     /// @return bool do_vibration_filtering
-    bool getDoVibrationFiltering();
+    bool doVibrationFiltering();
 
     /// @brief Set a parameter: "do_vibration_filtering"
     /// @param do_vibration_filtering
@@ -161,7 +168,7 @@ class sfeBmv080
 
     /// @brief Get a parameter: "measurement_algorithm"
     /// @return uint8_t measurement_algorithm
-    uint8_t getMeasurementAlgorithm();
+    uint8_t measurementAlgorithm();
 
     /// @brief Set a parameter: "measurement_algorithm"
     /// @param measurement_algorithm
