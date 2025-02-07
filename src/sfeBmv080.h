@@ -8,13 +8,11 @@
     This file implements the BMV080 class, prototyped in SparkFun_BMV080_Arduino_Library.h
 
     Development environment specifics:
-    IDE: Arduino 2.3.3
-    Hardware Platform: SparkFun IoT Redboard ESP32
     BMV080 Breakout HW Version: v01
 
     SPDX-License-Identifier: MIT
 
-    Copyright (c) 2024 SparkFun Electronics
+    Copyright (c) 2025 SparkFun Electronics
 
     Distributed as-is; no warranty is given.
 ******************************************************************************/
@@ -24,7 +22,8 @@
 #include "bmv080.h"
 #include "bmv080_defs.h"
 
-#include <SparkFun_Toolkit.h>
+// Include the platform independent layer of the SparkFun Toolkit
+#include <sfeTk/sfeToolkit.h>
 #include <stdint.h>
 
 #define SFE_BMV080_DEFAULT_ADDRESS 0x57
@@ -32,19 +31,6 @@
 
 #define SFE_BMV080_MODE_CONTINUOUS 0
 #define SFE_BMV080_MODE_DUTY_CYCLE 1
-
-// #define SPI_CLK_FREQ          ((uint32_t)(1e6)) // 1 MHz
-#define SPI_CLK_FREQ          1000000u // 1 MHz
-
-typedef struct
-{
-    /*! Instance of arduino SPI protocol instance */
-    SPIClass *instance;
-    /*! Instance of arduino SPI settings to be applied before every transmission */
-    SPISettings settings;
-} spi_device_t;
-
-
 
 class sfeBmv080
 {
@@ -63,23 +49,29 @@ class sfeBmv080
     /// @details This function initializes the sensor and should be called
     /// @details before any other functions. It calls Open, Reset, getDriverVersion, and getID.
     /// @return True if successful, false otherwise
-    bool init();
+    bool init(void);
 
-    /// @brief Get the version information of this sensor driver.
+    /// @brief Get the version information of this sensor driver - the vendor supplied version.
+    /// @param major Major version number
+    /// @param minor Minor version number
+    /// @param patch Patch version number
     /// @return True if successful, false otherwise
-    bool driverVersion();
+    bool driverVersion(uint16_t &major, uint16_t &minor, uint16_t &patch);
 
     /// @brief Open a sensor unit by initializing a new handle.
     /// @return True if successful, false otherwise
-    bool open();
+    bool open(void);
 
     /// @brief Reset the sensor
     /// @return True if successful, false otherwise
-    bool reset();
+    bool reset(void);
 
+    // ID Buffer len
+    static const size_t kBMV800IDLength = 13;
     /// @brief Get the ID of the sensor
+    /// @param idOut Buffer to return the ID in - must be 13 bytes long
     /// @return True if successful, false otherwise
-    bool ID();
+    bool ID(char idOut[kBMV800IDLength]);
 
     /// @brief Set the mode of the sensor
     /// @param mode SFE_BMV080_MODE_CONTINUOUS, SFE_BMV080_MODE_DUTY_CYCLE
@@ -88,29 +80,23 @@ class sfeBmv080
 
     /// @brief Get the PM2.5 value
     /// @return The PM2.5 value as a float in ug/m3
-    float PM25();
+    float PM25(void);
 
     /// @brief Get the PM1 value
     /// @return The PM1 value as a float in ug/m3
-    float PM1();
+    float PM1(void);
 
     /// @brief Get the obstruction status
     /// @return True if obstructed, false otherwise
     bool isObstructed();
 
+    // "Internal" method to set the se
     void setSensorValue(bmv080_output_t bmv080_output);
 
-    /// @brief Get the sensor value
-    /// @param bmv080_output pointer to value output struct
-    /// @param update_data if true, update the data from the sensor
+    /// @brief Get the sensor value, update internal value cache and return the value if requested
+    /// @param bmv080_output pointer to value output struct - if nullptr, no data is returned
     /// @return true on success, false if no data is available
-    bool sensorValue(bmv080_output_t *bmv080_output, bool update_data = true);
-
-    /// @brief Check if new data is available
-    /// @details This function should be called in the main loop to check if new data is available
-    /// @details If new data is available, the data can be read using PM25 and isObstructed
-    /// @return True if new data is available, false otherwise
-    bool isDataAvailable();
+    bool readSensor(bmv080_output_t *bmv080_output = nullptr);
 
     /// @brief Get the duty cycling period
     /// @return The duty cycling period in seconds
@@ -176,7 +162,17 @@ class sfeBmv080
     bool setMeasurementAlgorithm(uint8_t measurement_algorithm);
 
   private:
-    bmv080_handle_t bmv080_handle_class = NULL;
+    // bosch bmv080 library callback functions (static methods to be used as callbacks)
+    static int8_t device_read_16bit_CB(bmv080_sercom_handle_t, uint16_t, uint16_t *, uint16_t);
+    static int8_t device_write_16bit_CB(bmv080_sercom_handle_t, uint16_t, const uint16_t *, uint16_t);
+    static int8_t device_delay_CB(uint32_t);
+    static void set_sensor_value(bmv080_output_t, void *);
+
+    /// @brief Called to pump the service routine of the BMV080 sensor driver
+    /// @return True on success, false on failure
+    bool sensorServiceRoutine(void);
+
+    bmv080_handle_t _bmv080_handle_class = NULL;
     bool _dataAvailable = false;
     bmv080_output_t _sensorValue;
 
