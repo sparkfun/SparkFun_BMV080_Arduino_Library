@@ -21,8 +21,9 @@
 
 #pragma once
 
-#include "sfeBmv080.h"
+
 #include <SparkFun_Toolkit.h>
+#include "sfeBmv080.h"
 
 // The BMV080 Bosch API requires a larger than usual stack size
 // In particular, bmv080_serve_interrupt is the culprit.
