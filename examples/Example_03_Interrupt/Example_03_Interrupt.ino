@@ -95,7 +95,7 @@ void loop()
         int_flag = false; // Reset the flag
         do{
             Serial.println("Reading BMV080");
-            if(bmv080.isDataAvailable())
+            if(bmv080.readSensor())
             {
                 float pm25 = bmv080.PM25();
                 Serial.print(pm25);

@@ -27,16 +27,16 @@
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 #include <Wire.h>
 
-SparkFunBMV080I2C bmv080;           // Create an instance of the BMV080 class
-#define BMV080_ADDR 0x57 // SparkFun BMV080 Breakout defaults to 0x57
+SparkFunBMV080I2C bmv080; // Create an instance of the BMV080 class
+#define BMV080_ADDR 0x57  // SparkFun BMV080 Breakout defaults to 0x57
 
 // Some Dev boards have their QWIIC connector on Wire or Wire1
 // This #ifdef will help this sketch work across more products
 
 #ifdef ARDUINO_SPARKFUN_THINGPLUS_RP2040
-#define wirePort   Wire1
+#define wirePort Wire1
 #else
-#define wirePort  Wire
+#define wirePort Wire
 #endif
 
 void setup()
@@ -81,7 +81,7 @@ void setup()
 
 void loop()
 {
-    if (bmv080.isDataAvailable())
+    if (bmv080.readSensor())
     {
         float pm25 = bmv080.PM25();
         float pm1 = bmv080.PM1();

@@ -182,7 +182,7 @@ void setup()
 
 void loop()
 {
-    if (bmv080.isDataAvailable())
+    if (bmv080.readSensor())
     {
         pm25Value = bmv080.PM25();
         pm1Value = bmv080.PM1();

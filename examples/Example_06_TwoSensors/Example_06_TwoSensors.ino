@@ -121,7 +121,7 @@ void setup()
 
 void loop()
 {
-    if (bmv080.isDataAvailable())
+    if (bmv080.readSensor())
     {
         pm25 = bmv080.PM25();
         isObstructed = bmv080.isObstructed();
@@ -130,7 +130,7 @@ void loop()
     }
     delay(200); // needs a ~200ms delay in between talking to each sensor
 
-    if (bmv080_2.isDataAvailable())
+    if (bmv080_2.readSensor())
     {
         pm25_2 = bmv080_2.PM25();
         isObstructed2 = bmv080_2.isObstructed();

@@ -100,7 +100,7 @@ void setup()
 
 void loop()
 {
-    if (bmv080.isDataAvailable())
+    if (bmv080.readSensor())
     {
         float pm25 = bmv080.PM25();
 
