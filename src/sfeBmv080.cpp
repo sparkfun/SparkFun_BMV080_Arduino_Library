@@ -22,6 +22,7 @@
 #include "bmv080_defs.h"
 
 // need our bus I2C type for some I2C specific features
+#include "sfeTk/sfeToolkit.h"
 #include "sfeTk/sfeTkII2C.h"
 
 #include <cstring>
@@ -100,7 +101,7 @@ int8_t sfeBmv080::device_write_16bit_CB(bmv080_sercom_handle_t handle, uint16_t 
 //
 int8_t sfeBmv080::device_delay_CB(uint32_t period)
 {
-    sfeToolkit::delay_ms(period);
+    sfeTk_delay_ms(period);
     // delay(period);
 
     return E_COMBRIDGE_OK;
@@ -191,7 +192,7 @@ bool sfeBmv080::setMode(uint8_t mode)
     {
         bmv080_duty_cycling_mode_t duty_cycling_mode = E_BMV080_DUTY_CYCLING_MODE_0;
         bmv080_current_status = bmv080_start_duty_cycling_measurement(
-            _bmv080_handle_class, (bmv080_callback_tick_t)sfeToolkit::ticks_ms(), duty_cycling_mode);
+            _bmv080_handle_class, (bmv080_callback_tick_t)sfeTk_ticks_ms(), duty_cycling_mode);
     }
 
     // check if the mode was set correctly
