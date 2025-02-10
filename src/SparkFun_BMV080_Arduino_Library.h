@@ -3,7 +3,7 @@
     SparkFun BMV080 Library header file
 
     by Pete Lewis @SparkFun Electronics
-    September 2024
+    September 2025
 
     This file implements the BMV080 class, prototyped in SparkFun_BMV080_Arduino_Library.h
 
@@ -23,7 +23,7 @@
 
 
 #include <SparkFun_Toolkit.h>
-#include "sfeBmv080.h"
+#include "sfeTk/sfeDevBMV080.h"
 
 // The BMV080 Bosch API requires a larger than usual stack size
 // In particular, bmv080_serve_interrupt is the culprit.
@@ -33,7 +33,7 @@
 SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
 #endif
 
-class SparkFunBMV080I2C : public sfeBmv080
+class SparkFunBMV080I2C : public sfeDevBMV080
 {
   public:
     /// @brief Begins the Device
@@ -47,7 +47,7 @@ class SparkFunBMV080I2C : public sfeBmv080
         _theI2CBus.setByteOrder(SFTK_MSBFIRST);
 
         // Begin the sensor
-        sfeTkError_t rc = sfeBmv080::begin(&_theI2CBus);
+        sfeTkError_t rc = sfeDevBMV080::begin(&_theI2CBus);
 
         return rc == kSTkErrOk ? isConnected() : false;
     }
@@ -63,7 +63,7 @@ class SparkFunBMV080I2C : public sfeBmv080
     sfeTkArdI2C _theI2CBus;
 };
 
-class SparkFunBMV080SPI : public sfeBmv080
+class SparkFunBMV080SPI : public sfeDevBMV080
 {
   public:
     /// @brief Begins the Device with SPI as the communication bus
@@ -78,7 +78,7 @@ class SparkFunBMV080SPI : public sfeBmv080
         _theSPIBus.init(spiPort, spiSettings, csPin, true);
 
         // Begin the sensor
-        sfeTkError_t rc = sfeBmv080::begin(&_theSPIBus);
+        sfeTkError_t rc = sfeDevBMV080::begin(&_theSPIBus);
 
         return rc == kSTkErrOk ? true : false;
     }

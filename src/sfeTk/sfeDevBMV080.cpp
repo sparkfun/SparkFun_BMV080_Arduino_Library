@@ -1,29 +1,26 @@
 /******************************************************************************
-    sfeBmv080.cpp
+    sfeDevBMV080.cpp
     SparkFun BMV080 Library CPP file
 
     by Pete Lewis @SparkFun Electronics
     September 2024
 
-    Development environment specifics:
-    IDE: Arduino 2.3.3
-    Hardware Platform: SparkFun IoT Redboard ESP32
     BMV080 Breakout HW Version: v01
 
     SPDX-License-Identifier: MIT
 
-    Copyright (c) 2024 SparkFun Electronics
+    Copyright (c) 2025 SparkFun Electronics
 
     Distributed as-is; no warranty is given.
 ******************************************************************************/
 
-#include "sfeBmv080.h"
+#include "sfeDevBMV080.h"
 #include "bmv080.h"
 #include "bmv080_defs.h"
 
 // need our bus I2C type for some I2C specific features
-#include "sfeTk/sfeToolkit.h"
 #include "sfeTk/sfeTkII2C.h"
+#include "sfeTk/sfeToolkit.h"
 
 #include <cstring>
 
@@ -53,8 +50,8 @@
 // Callback for reading data-- called from the Bosch supplied library
 //
 // static int8_t device_read_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, uint16_t *payload,
-int8_t sfeBmv080::device_read_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, uint16_t *payload,
-                                       uint16_t payload_length)
+int8_t sfeDevBMV080::device_read_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, uint16_t *payload,
+                                          uint16_t payload_length)
 {
     if (handle == nullptr)
         return E_COMBRIDGE_ERROR_NULLPTR;
@@ -79,8 +76,8 @@ int8_t sfeBmv080::device_read_16bit_CB(bmv080_sercom_handle_t handle, uint16_t h
 // --------------------------------------------------------------------------------------------
 // Callback for reading data-- called from the Bosch supplied library
 //
-int8_t sfeBmv080::device_write_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, const uint16_t *payload,
-                                        uint16_t payload_length)
+int8_t sfeDevBMV080::device_write_16bit_CB(bmv080_sercom_handle_t handle, uint16_t header, const uint16_t *payload,
+                                           uint16_t payload_length)
 {
     if (handle == nullptr)
         return E_COMBRIDGE_ERROR_NULLPTR;
@@ -99,7 +96,7 @@ int8_t sfeBmv080::device_write_16bit_CB(bmv080_sercom_handle_t handle, uint16_t 
 // --------------------------------------------------------------------------------------------
 // Delay callback function for the Bosch library
 //
-int8_t sfeBmv080::device_delay_CB(uint32_t period)
+int8_t sfeDevBMV080::device_delay_CB(uint32_t period)
 {
     sfeTk_delay_ms(period);
     // delay(period);
@@ -108,12 +105,12 @@ int8_t sfeBmv080::device_delay_CB(uint32_t period)
 }
 
 //---------------------------------------------------------------------
-// This function is just used in this file, so declaring it static
+// helpful class method/callback
 
 /* Custom function for consuming sensor readings */
-void sfeBmv080::set_sensor_value(bmv080_output_t bmv080_output, void *callback_parameters)
+void sfeDevBMV080::set_sensor_value(bmv080_output_t bmv080_output, void *callback_parameters)
 {
-    ((sfeBmv080 *)callback_parameters)->setSensorValue(bmv080_output);
+    ((sfeDevBMV080 *)callback_parameters)->setSensorValue(bmv080_output);
 }
 
 //---------------------------------------------------------------------
@@ -122,7 +119,7 @@ void sfeBmv080::set_sensor_value(bmv080_output_t bmv080_output, void *callback_p
 //---------------------------------------------------------------------
 // Core object implementation
 //---------------------------------------------------------------------
-sfeTkError_t sfeBmv080::begin(sfeTkIBus *theBus)
+sfeTkError_t sfeDevBMV080::begin(sfeTkIBus *theBus)
 {
     // Nullptr check
     if (theBus == nullptr)
@@ -135,25 +132,25 @@ sfeTkError_t sfeBmv080::begin(sfeTkIBus *theBus)
 }
 
 //---------------------------------------------------------------------
-float sfeBmv080::PM25()
+float sfeDevBMV080::PM25()
 {
     return _sensorValue.pm2_5_mass_concentration;
 }
 
 //---------------------------------------------------------------------
-float sfeBmv080::PM1()
+float sfeDevBMV080::PM1()
 {
     return _sensorValue.pm1_mass_concentration;
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::isObstructed()
+bool sfeDevBMV080::isObstructed()
 {
     return _sensorValue.is_obstructed;
 }
 
 //---------------------------------------------------------------------
-void sfeBmv080::setSensorValue(bmv080_output_t bmv080_output)
+void sfeDevBMV080::setSensorValue(bmv080_output_t bmv080_output)
 {
     // TODO: should here be a mode where the library user can set register a callback function to handle the data?
     //       This way the end user can get all the sensor data at once - possible issue is stack/re-entrancy
@@ -167,7 +164,7 @@ void sfeBmv080::setSensorValue(bmv080_output_t bmv080_output)
 // Read the latest values from the sensor.
 //
 // Stash the values internally. If the
-bool sfeBmv080::readSensor(bmv080_output_t *bmv080_output /* default is nullptr*/)
+bool sfeDevBMV080::readSensor(bmv080_output_t *bmv080_output /* default is nullptr*/)
 {
     _dataAvailable = false;
     if (!sensorServiceRoutine())
@@ -180,9 +177,9 @@ bool sfeBmv080::readSensor(bmv080_output_t *bmv080_output /* default is nullptr*
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::setMode(uint8_t mode)
+bool sfeDevBMV080::setMode(uint8_t mode)
 {
-    bmv080_status_code_t bmv080_current_status; // return status from the Bosch API function
+    bmv080_status_code_t bmv080_current_status = E_BMV080_ERROR_PARAM_INVALID_VALUE; // return status from the Bosch API function
 
     if (mode == SFE_BMV080_MODE_CONTINUOUS)
     {
@@ -196,21 +193,14 @@ bool sfeBmv080::setMode(uint8_t mode)
     }
 
     // check if the mode was set correctly
-    if (bmv080_current_status == E_BMV080_OK)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (bmv080_current_status == E_BMV080_OK);
 }
 
 //---------------------------------------------------------------------
 // Called to pump the service routine of the BMV080 sensor driver
 //
 
-bool sfeBmv080::sensorServiceRoutine(void)
+bool sfeDevBMV080::sensorServiceRoutine(void)
 {
     if (_bmv080_handle_class == NULL)
         return false;
@@ -223,7 +213,7 @@ bool sfeBmv080::sensorServiceRoutine(void)
 
 //---------------------------------------------------------------------
 // Our init method
-bool sfeBmv080::init()
+bool sfeDevBMV080::init()
 {
     // Do we have a bus?
     if (_theBus == nullptr)
@@ -238,7 +228,7 @@ bool sfeBmv080::init()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::open()
+bool sfeDevBMV080::open()
 {
     if (_theBus == nullptr)
         return false;
@@ -254,14 +244,14 @@ bool sfeBmv080::open()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::reset()
+bool sfeDevBMV080::reset()
 {
     bmv080_status_code_t bmv080_current_status = bmv080_reset(_bmv080_handle_class);
 
     return (bmv080_current_status == E_BMV080_OK);
 }
 //---------------------------------------------------------------------
-bool sfeBmv080::driverVersion(uint16_t &major, uint16_t &minor, uint16_t &patch)
+bool sfeDevBMV080::driverVersion(uint16_t &major, uint16_t &minor, uint16_t &patch)
 {
     char git_hash[12];
     int32_t commits_ahead = 0;
@@ -275,7 +265,7 @@ bool sfeBmv080::driverVersion(uint16_t &major, uint16_t &minor, uint16_t &patch)
 //---------------------------------------------------------------------
 
 // Method to get the ID
-bool sfeBmv080::ID(char idOut[kBMV800IDLength])
+bool sfeDevBMV080::ID(char idOut[kBMV800IDLength])
 {
     memset(idOut, 0x00, kBMV800IDLength);
     bmv080_status_code_t bmv080_current_status = bmv080_get_sensor_id(_bmv080_handle_class, idOut);
@@ -284,7 +274,7 @@ bool sfeBmv080::ID(char idOut[kBMV800IDLength])
 }
 
 //---------------------------------------------------------------------
-uint16_t sfeBmv080::dutyCyclingPeriod()
+uint16_t sfeDevBMV080::dutyCyclingPeriod()
 {
     uint16_t duty_cycling_period = 0;
     bmv080_status_code_t bmv080_current_status =
@@ -294,7 +284,7 @@ uint16_t sfeBmv080::dutyCyclingPeriod()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
+bool sfeDevBMV080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
 {
     bmv080_status_code_t bmv080_current_status =
         bmv080_set_parameter(_bmv080_handle_class, "duty_cycling_period", (void *)&duty_cycling_period);
@@ -303,7 +293,7 @@ bool sfeBmv080::setDutyCyclingPeriod(uint16_t duty_cycling_period)
 }
 
 //---------------------------------------------------------------------
-float sfeBmv080::volumetricMassDensity()
+float sfeDevBMV080::volumetricMassDensity()
 {
     float volumetric_mass_density = 0.0;
     bmv080_status_code_t bmv080_current_status =
@@ -313,7 +303,7 @@ float sfeBmv080::volumetricMassDensity()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::setVolumetricMassDensity(float volumetric_mass_density)
+bool sfeDevBMV080::setVolumetricMassDensity(float volumetric_mass_density)
 {
     bmv080_status_code_t bmv080_current_status =
         bmv080_set_parameter(_bmv080_handle_class, "volumetric_mass_density", (void *)&volumetric_mass_density);
@@ -322,7 +312,7 @@ bool sfeBmv080::setVolumetricMassDensity(float volumetric_mass_density)
 }
 
 //---------------------------------------------------------------------
-float sfeBmv080::integrationTime()
+float sfeDevBMV080::integrationTime()
 {
     float integration_time = 0.0;
     bmv080_status_code_t bmv080_current_status =
@@ -332,7 +322,7 @@ float sfeBmv080::integrationTime()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::setIntegrationTime(float integration_time)
+bool sfeDevBMV080::setIntegrationTime(float integration_time)
 {
     bmv080_status_code_t bmv080_current_status =
         bmv080_set_parameter(_bmv080_handle_class, "integration_time", (void *)&integration_time);
@@ -341,7 +331,7 @@ bool sfeBmv080::setIntegrationTime(float integration_time)
 }
 
 //---------------------------------------------------------------------
-uint32_t sfeBmv080::distributionId()
+uint32_t sfeDevBMV080::distributionId()
 {
     uint32_t distribution_id = 0;
     bmv080_status_code_t bmv080_current_status =
@@ -352,7 +342,7 @@ uint32_t sfeBmv080::distributionId()
 
 //---------------------------------------------------------------------
 
-bool sfeBmv080::setDistributionId(uint32_t distribution_id)
+bool sfeDevBMV080::setDistributionId(uint32_t distribution_id)
 {
     bmv080_status_code_t bmv080_current_status =
         bmv080_set_parameter(_bmv080_handle_class, "distribution_id", (void *)&distribution_id);
@@ -361,7 +351,7 @@ bool sfeBmv080::setDistributionId(uint32_t distribution_id)
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::doObstructionDetection()
+bool sfeDevBMV080::doObstructionDetection()
 {
     bool do_obstruction_detection = false;
     bmv080_status_code_t bmv080_current_status =
@@ -371,7 +361,7 @@ bool sfeBmv080::doObstructionDetection()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::setDoObstructionDetection(bool do_obstruction_detection)
+bool sfeDevBMV080::setDoObstructionDetection(bool do_obstruction_detection)
 {
     bmv080_status_code_t bmv080_current_status =
         bmv080_set_parameter(_bmv080_handle_class, "do_obstruction_detection", (void *)&do_obstruction_detection);
@@ -380,7 +370,7 @@ bool sfeBmv080::setDoObstructionDetection(bool do_obstruction_detection)
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::doVibrationFiltering()
+bool sfeDevBMV080::doVibrationFiltering()
 {
     bool do_vibration_filtering = false;
     bmv080_status_code_t bmv080_current_status =
@@ -390,7 +380,7 @@ bool sfeBmv080::doVibrationFiltering()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::setDoVibrationFiltering(bool do_vibration_filtering)
+bool sfeDevBMV080::setDoVibrationFiltering(bool do_vibration_filtering)
 {
     bmv080_status_code_t bmv080_current_status =
         bmv080_set_parameter(_bmv080_handle_class, "do_vibration_filtering", (void *)&do_vibration_filtering);
@@ -399,7 +389,7 @@ bool sfeBmv080::setDoVibrationFiltering(bool do_vibration_filtering)
 }
 
 //---------------------------------------------------------------------
-uint8_t sfeBmv080::measurementAlgorithm()
+uint8_t sfeDevBMV080::measurementAlgorithm()
 {
     bmv080_measurement_algorithm_t measurement_algorithm;
     bmv080_status_code_t bmv080_current_status =
@@ -409,7 +399,7 @@ uint8_t sfeBmv080::measurementAlgorithm()
 }
 
 //---------------------------------------------------------------------
-bool sfeBmv080::setMeasurementAlgorithm(uint8_t measurement_algorithm)
+bool sfeDevBMV080::setMeasurementAlgorithm(uint8_t measurement_algorithm)
 {
     bmv080_measurement_algorithm_t bmv080_measurement_algorithm = (bmv080_measurement_algorithm_t)measurement_algorithm;
     bmv080_status_code_t bmv080_current_status =

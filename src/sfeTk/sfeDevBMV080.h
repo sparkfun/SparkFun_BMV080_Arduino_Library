@@ -1,13 +1,12 @@
 /******************************************************************************
-    sfeBmv080.h
+    sfeDevBMV080.h
     SparkFun BMV080 Library header file
 
     by Pete Lewis @SparkFun Electronics
-    September 2024
+    September 2025
 
     This file implements the BMV080 class, prototyped in SparkFun_BMV080_Arduino_Library.h
 
-    Development environment specifics:
     BMV080 Breakout HW Version: v01
 
     SPDX-License-Identifier: MIT
@@ -32,11 +31,11 @@
 #define SFE_BMV080_MODE_CONTINUOUS 0
 #define SFE_BMV080_MODE_DUTY_CYCLE 1
 
-class sfeBmv080
+class sfeDevBMV080
 {
   public:
     /// @brief Default constructor
-    sfeBmv080() : _theBus{nullptr}
+    sfeDevBMV080() : _theBus{nullptr}
     {
     }
 
