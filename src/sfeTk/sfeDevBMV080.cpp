@@ -98,7 +98,7 @@ int8_t sfeDevBMV080::device_write_16bit_CB(bmv080_sercom_handle_t handle, uint16
 //
 int8_t sfeDevBMV080::device_delay_CB(uint32_t period)
 {
-    sfeTk_delay_ms(period);
+    sftk_delay_ms(period);
     // delay(period);
 
     return E_COMBRIDGE_OK;
@@ -189,7 +189,7 @@ bool sfeDevBMV080::setMode(uint8_t mode)
     {
         bmv080_duty_cycling_mode_t duty_cycling_mode = E_BMV080_DUTY_CYCLING_MODE_0;
         bmv080_current_status = bmv080_start_duty_cycling_measurement(
-            _bmv080_handle_class, (bmv080_callback_tick_t)sfeTk_ticks_ms(), duty_cycling_mode);
+            _bmv080_handle_class, (bmv080_callback_tick_t)sftk_ticks_ms(), duty_cycling_mode);
     }
 
     // check if the mode was set correctly
@@ -233,8 +233,8 @@ bool sfeDevBMV080::open()
     if (_theBus == nullptr)
         return false;
 
-    // Open the device - pass in the data read, data write and delay functions callbacks. Note - the "secrom_handle_t"
-    // is just a pointer to our Tookkit communication bus objects
+    // Open the device - pass in the data read, data write and delay functions callbacks. Note - the "sercom_handle_t"
+    // is just a pointer to our Toolkit communication bus objects
 
     bmv080_status_code_t status = bmv080_open(
         &_bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,
