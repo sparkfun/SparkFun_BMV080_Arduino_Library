@@ -163,7 +163,7 @@ void sfeDevBMV080::setSensorValue(bmv080_output_t bmv080_output)
 //---------------------------------------------------------------------
 // Read the latest values from the sensor.
 //
-// Stash the values internally. If the
+// Return the value if a struct is passed in. 
 bool sfeDevBMV080::readSensor(bmv080_output_t *bmv080_output /* default is nullptr*/)
 {
     _dataAvailable = false;
