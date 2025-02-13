@@ -23,6 +23,7 @@
 
 // Include the platform independent layer of the SparkFun Toolkit
 #include <sfeTk/sfeToolkit.h>
+#include <sfeTk/sfeTkIBus.h>
 #include <stdint.h>
 
 #define SFE_BMV080_DEFAULT_ADDRESS 0x57
