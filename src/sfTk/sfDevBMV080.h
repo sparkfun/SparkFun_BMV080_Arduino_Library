@@ -1,8 +1,8 @@
 /**
- * @file sfeDevBMV080.h
+ * @file sfDevBMV080.h
  * @brief Header file for the SparkFun BMV080 Library
  *
- * This file contains the header of the sfeDevBMV080 class, which provides
+ * This file contains the header of the sfDevBMV080 class, which provides
  * an interface to the BMV080 sensor. It includes methods for initializing the sensor,
  * reading sensor data, and configuring sensor settings.
  *
@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: MIT
  *
- * @see sfeDevBMV080.cpp
+ * @see sfDevBMV080.cpp
  */
 
 #pragma once
@@ -22,21 +22,21 @@
 #include "bmv080_defs.h"
 
 // Include the platform independent layer of the SparkFun Toolkit
-#include <sfeTk/sfeTkIBus.h>
-#include <sfeTk/sfeToolkit.h>
+#include <sfTk/sfTkIBus.h>
+#include <sfTk/sfToolkit.h>
 #include <stdint.h>
 
-#define SFE_BMV080_DEFAULT_ADDRESS 0x57
-#define SFE_BMV080_DEFAULT_IRQ_PIN 14
+#define SF_BMV080_DEFAULT_ADDRESS 0x57
+#define SF_BMV080_DEFAULT_IRQ_PIN 14
 
-#define SFE_BMV080_MODE_CONTINUOUS 0
-#define SFE_BMV080_MODE_DUTY_CYCLE 1
+#define SF_BMV080_MODE_CONTINUOUS 0
+#define SF_BMV080_MODE_DUTY_CYCLE 1
 
-class sfeDevBMV080
+class sfDevBMV080
 {
   public:
     /// @brief Default constructor
-    sfeDevBMV080() : _theBus{nullptr}
+    sfDevBMV080() : _theBus{nullptr}
     {
     }
 
@@ -48,7 +48,7 @@ class sfeDevBMV080
      *
      * @param theBus SparkFun Toolkit bus interface to use for communication.
      *
-     * @return sfeTkError_t Status code:
+     * @return sfTkError_t Status code:
      *         - 0: Success
      *         - Negative: Error occurred
      *         - Positive: Warning condition
@@ -56,7 +56,7 @@ class sfeDevBMV080
      * @see init()
      * @see open()
      */
-    sfeTkError_t begin(sfeTkIBus *theBus = nullptr);
+    sfTkError_t begin(sfTkIBus *theBus = nullptr);
 
     /**
      * @brief Initializes the BMV080 sensor
@@ -573,7 +573,7 @@ class sfeDevBMV080
      * to the appropriate instance through the void pointer to user data.
      *
      * @param bmv080_output The sensor output structure containing the latest readings
-     * @param[in] user_data Pointer to the sfeDevBMV080 instance (cast from void*)
+     * @param[in] user_data Pointer to the sfDevBMV080 instance (cast from void*)
      *
      * @note This is an internal callback used by the Bosch BMV080 driver
      *
@@ -600,10 +600,16 @@ class sfeDevBMV080
      */
     bool sensorServiceRoutine(void);
 
+    // BMV080 sensor handle - used when referencing the sensor using the Bosch API
     bmv080_handle_t _bmv080_handle_class = NULL;
+
+    // Internal flag to track if new sensor data is available
     bool _dataAvailable = false;
+
+    // Internal cache for the latest sensor values
     bmv080_output_t _sensorValue;
 
   protected:
-    sfeTkIBus *_theBus;
+    // Pointer to the SparkFun Toolkit bus interface used for communication
+    sfTkIBus *_theBus;
 };

@@ -79,7 +79,7 @@ void setup()
     getSetParameters(); // Get and set parameters
 
     /* Set the sensor mode to continuous mode */
-    if(bmv080.setMode(SFE_BMV080_MODE_CONTINUOUS) == true)
+    if(bmv080.setMode(SF_BMV080_MODE_CONTINUOUS) == true)
     {
         Serial.println("BMV080 set to continuous mode");
     }
