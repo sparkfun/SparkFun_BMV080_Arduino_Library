@@ -42,7 +42,7 @@ class SparkFunBMV080I2C : public sfeDevBMV080
     /// @return True if successful, false otherwise
     bool begin(const uint8_t address = SFE_BMV080_DEFAULT_ADDRESS, TwoWire &wirePort = Wire)
     {
-        // Setup Arudino I2C bus
+        // Setup Arduino I2C bus
         _theI2CBus.init(wirePort, address);
         _theI2CBus.setByteOrder(SFTK_MSBFIRST);
 
