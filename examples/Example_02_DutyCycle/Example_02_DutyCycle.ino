@@ -77,7 +77,7 @@ void setup()
     }
 
     /* Set the sensor mode to Duty Cycle mode */
-    if(bmv080.setMode(SFE_BMV080_MODE_DUTY_CYCLE) == true)
+    if(bmv080.setMode(SF_BMV080_MODE_DUTY_CYCLE) == true)
     {
         Serial.println("BMV080 set to Duty Cycle mode");
     }

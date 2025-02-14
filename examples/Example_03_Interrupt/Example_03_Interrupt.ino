@@ -75,7 +75,7 @@ void setup()
     /* Set the sensor mode to continuous mode */
     // The hardware interrupt of the BMV080 sensor unit cannot be used as trigger 
     // in duty cycling mode.
-    if(bmv080.setMode(SFE_BMV080_MODE_CONTINUOUS) == true)
+    if(bmv080.setMode(SF_BMV080_MODE_CONTINUOUS) == true)
     {
         Serial.println("BMV080 set to continuous mode");
     }
