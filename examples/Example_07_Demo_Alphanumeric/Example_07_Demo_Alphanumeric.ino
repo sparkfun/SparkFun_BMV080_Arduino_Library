@@ -1,7 +1,10 @@
 /*
   Using the BMV080 Particulate Matter PM2.5 Sensor
 
-  This example shows how to use the sensor in "continuous mode" to get
+  This example shows how display the Pm2.5 readings on a SparkFun Qwiic 
+  Alphanumeric display.
+  
+  It uses the sensor in "continuous mode" to get
   particulate matter readings once every second.
 
   It uses polling of the device to check if new data is available.
@@ -27,16 +30,20 @@
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 #include <Wire.h>
 
-SparkFunBMV080I2C bmv080; // Create an instance of the BMV080 class
-#define BMV080_ADDR 0x57  // SparkFun BMV080 Breakout defaults to 0x57
+SparkFunBMV080I2C bmv080;           // Create an instance of the BMV080 class
+#define BMV080_ADDR 0x57 // SparkFun BMV080 Breakout defaults to 0x57
+
+#include <SparkFun_Alphanumeric_Display.h> //Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_Alphanumeric_Display by SparkFun
+HT16K33 display;
+#define DISPLAY_ADDRESS 0x70 // Default I2C address when A0, A1 are floating
 
 // Some Dev boards have their QWIIC connector on Wire or Wire1
 // This #ifdef will help this sketch work across more products
 
 #ifdef ARDUINO_SPARKFUN_THINGPLUS_RP2040
-#define wirePort Wire1
+#define wirePort   Wire1
 #else
-#define wirePort Wire
+#define wirePort  Wire
 #endif
 
 void setup()
@@ -50,7 +57,7 @@ void setup()
     // Comment out this while loop, or it will prevent the remaining code from running.
 
     Serial.println();
-    Serial.println("BMV080 Example 1 - Basic Readings");
+    Serial.println("BMV080 Example 7 - Alphanumeric Display");
 
     wirePort.begin();
 
@@ -77,6 +84,18 @@ void setup()
     {
         Serial.println("Error setting BMV080 mode");
     }
+
+    if (display.begin(DISPLAY_ADDRESS, DEFAULT_NOTHING_ATTACHED, DEFAULT_NOTHING_ATTACHED, DEFAULT_NOTHING_ATTACHED, wirePort) == false)
+    {
+        Serial.println("Qwiic Alphanumeric Device did not acknowledge! Freezing.");
+        while (1);
+    }
+    Serial.println("Qwiic Alphanumeric Display acknowledged.");
+
+    display.setBrightness(5); // Set brightness to 5/16 full brightness
+
+    display.print("PM2.5");
+
 }
 
 void loop()
@@ -84,15 +103,14 @@ void loop()
     if (bmv080.readSensor())
     {
         float pm25 = bmv080.PM25();
-        float pm1 = bmv080.PM1();
 
         Serial.print(pm25);
-        Serial.print("\t");
-        Serial.print(pm1);
+        display.print(int(pm25));
 
         if (bmv080.isObstructed() == true)
         {
             Serial.print("\tObstructed");
+            display.print("Obst");
         }
 
         Serial.println();

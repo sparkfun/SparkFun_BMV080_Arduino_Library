@@ -3,11 +3,7 @@
     SparkFun BMV080 Library header file
 
     by Pete Lewis @SparkFun Electronics
-    September 2024
-
-    Based on original source code written by
-        Fischer Moseley @ SparkFun Electronics
-        Original Creation Date: July 24, 2019
+    September 2025
 
     This file implements the BMV080 class, prototyped in SparkFun_BMV080_Arduino_Library.h
 
@@ -25,20 +21,19 @@
 
 #pragma once
 
-// TODO: Add includes as needed (e.g. #include <Wire.h>, #include <SPI.h>)
-#include "sfeBmv080.h"
-#include <SparkFun_Toolkit.h>
 
-// #include "Arduino.h"
-#include <bmv080.h>
-#include <bmv080_defs.h>
-#include "combridge.h"
+#include <SparkFun_Toolkit.h>
+#include "sfeTk/sfeDevBMV080.h"
 
 // The BMV080 Bosch API requires a larger than usual stack size
 // In particular, bmv080_serve_interrupt is the culprit.
-SET_LOOP_TASK_STACK_SIZE(60 * 1024);  // 60KB
+// If we are an ESP32 architecture, then we need to increase the loop stack size
+// to 60KB. This is because the ESP32 has a 32KB stack size by default.
+#if defined(ESP32)
+SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
+#endif
 
-class Bmv080 : public sfeBmv080
+class SparkFunBMV080I2C : public sfeDevBMV080
 {
   public:
     /// @brief Begins the Device
@@ -49,18 +44,45 @@ class Bmv080 : public sfeBmv080
     {
         // Setup Arudino I2C bus
         _theI2CBus.init(wirePort, address);
+        _theI2CBus.setByteOrder(SFTK_MSBFIRST);
 
         // Begin the sensor
-        return sfeBmv080::begin(&_theI2CBus) == kSTkErrOk;
+        sfeTkError_t rc = sfeDevBMV080::begin(&_theI2CBus);
+
+        return rc == kSTkErrOk ? isConnected() : false;
     }
 
     /// @brief Checks if the Device is connected
     /// @return True if the sensor is connected, false otherwise
     bool isConnected()
     {
-        return sfeBmv080::isConnected() == kSTkErrOk;
+        return _theI2CBus.ping() == kSTkErrOk;
     }
 
   private:
     sfeTkArdI2C _theI2CBus;
+};
+
+class SparkFunBMV080SPI : public sfeDevBMV080
+{
+  public:
+    /// @brief Begins the Device with SPI as the communication bus
+    /// @param csPin The chip select pin for the sensor
+    /// @param spiPort The SPI port to use for communication
+    /// @param spiSettings The SPI settings to use for communication
+    /// @return True if successful, false otherwise
+    bool begin(uint8_t csPin, SPIClass &spiPort = SPI, SPISettings spiSettings = SPISettings(100000, MSBFIRST, SPI_MODE0))
+    {
+
+        // Setup Arduino SPI bus
+        _theSPIBus.init(spiPort, spiSettings, csPin, true);
+
+        // Begin the sensor
+        sfeTkError_t rc = sfeDevBMV080::begin(&_theSPIBus);
+
+        return rc == kSTkErrOk ? true : false;
+    }
+
+  private:
+    sfeTkArdSPI _theSPIBus;
 };
