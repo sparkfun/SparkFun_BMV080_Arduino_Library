@@ -1,20 +1,20 @@
-/******************************************************************************
-    sfeDevBMV080.h
-    SparkFun BMV080 Library header file
-
-    by Pete Lewis @SparkFun Electronics
-    September 2025
-
-    This file implements the BMV080 class, prototyped in SparkFun_BMV080_Arduino_Library.h
-
-    BMV080 Breakout HW Version: v01
-
-    SPDX-License-Identifier: MIT
-
-    Copyright (c) 2025 SparkFun Electronics
-
-    Distributed as-is; no warranty is given.
-******************************************************************************/
+/**
+ * @file sfeDevBMV080.h
+ * @brief Header file for the SparkFun BMV080 Library
+ *
+ * This file contains the header of the sfeDevBMV080 class, which provides
+ * an interface to the BMV080 sensor. It includes methods for initializing the sensor,
+ * reading sensor data, and configuring sensor settings.
+ *
+ * @author Pete Lewis
+ * @date 2025
+ * @version 1.0
+ * @copyright (c) 2025 SparkFun Electronics Inc. This project is released under the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * @see sfeDevBMV080.cpp
+ */
 
 #pragma once
 
@@ -22,8 +22,8 @@
 #include "bmv080_defs.h"
 
 // Include the platform independent layer of the SparkFun Toolkit
-#include <sfeTk/sfeToolkit.h>
 #include <sfeTk/sfeTkIBus.h>
+#include <sfeTk/sfeToolkit.h>
 #include <stdint.h>
 
 #define SFE_BMV080_DEFAULT_ADDRESS 0x57
