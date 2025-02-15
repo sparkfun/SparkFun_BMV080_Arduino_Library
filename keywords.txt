@@ -4,7 +4,7 @@
 # Class
 #########################################################
 
-SparkFunBMV080I2C KEYWORD1
+SparkFunBMV080 KEYWORD1
 SparkFunBMV080SPI KEYWORD1
 
 #########################################################

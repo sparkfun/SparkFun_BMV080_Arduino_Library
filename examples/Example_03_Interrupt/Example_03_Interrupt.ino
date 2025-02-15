@@ -31,7 +31,7 @@
 #include <Wire.h>
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 
-SparkFunBMV080I2C bmv080; // Create an instance of the BMV080 class
+SparkFunBMV080 bmv080; // Create an instance of the BMV080 class
 #define BMV080_ADDR 0x57  // SparkFun BMV080 Breakout defaults to 0x57
 #define IRQ_Pin 14
 

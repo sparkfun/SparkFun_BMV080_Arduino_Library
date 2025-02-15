@@ -2,7 +2,7 @@
  * @file SparkFun_BMV080_Arduino_Library.h
  * @brief SparkFun BMV080 Library header file
  *
- * This file implements the SparkFunBMV080I2C and SparkFunBMV080SPI classes,
+ * This file implements the SparkFunBMV080 and SparkFunBMV080SPI classes,
  * for use with the SparkFun BMV080 sensor qwiic breakout board, HW version v01.
  *
  * @author Pete Lewis
@@ -37,7 +37,7 @@ SET_LOOP_TASK_STACK_SIZE(60 * 1024); // 60KB
  *
  * @see sfDevBMV080
  */
-class SparkFunBMV080I2C : public sfDevBMV080
+class SparkFunBMV080 : public sfDevBMV080
 {
   public:
     /**

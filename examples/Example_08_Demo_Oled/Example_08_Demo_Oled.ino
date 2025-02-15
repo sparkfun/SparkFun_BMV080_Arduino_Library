@@ -34,7 +34,7 @@
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 #include <Wire.h>
 
-SparkFunBMV080I2C bmv080;           // Create an instance of the BMV080 class
+SparkFunBMV080 bmv080;           // Create an instance of the BMV080 class
 #define BMV080_ADDR 0x57 // SparkFun BMV080 Breakout defaults to 0x57
 
 float pm1Value = 0.0; // PM1 value - global so we can update it in the loop and 

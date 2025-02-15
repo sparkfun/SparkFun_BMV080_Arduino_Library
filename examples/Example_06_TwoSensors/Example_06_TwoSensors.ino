@@ -33,10 +33,10 @@
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 #include <Wire.h>
 
-SparkFunBMV080I2C bmv080;           // Create an instance of the BMV080 class
+SparkFunBMV080 bmv080;           // Create an instance of the BMV080 class
 #define BMV080_ADDR 0x57 // SparkFun BMV080 Breakout defaults to 0x57
 
-SparkFunBMV080I2C bmv080_2;           // Create an instance of the BMV080 class
+SparkFunBMV080 bmv080_2;           // Create an instance of the BMV080 class
 #define BMV080_ADDR2 0x56 // AB0 Jumper set to 0
 
 bool newDataAvailable = false; // Flag to indicate new data is available
