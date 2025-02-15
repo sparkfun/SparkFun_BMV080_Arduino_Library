@@ -16,9 +16,11 @@
 
 #pragma once
 
+// helps to keep the Toolkit header before the tk calls
+// clang-format off
 #include <SparkFun_Toolkit.h>
 #include "sfTk/sfDevBMV080.h"
-
+// clang-format on
 
 // The BMV080 Bosch API requires a larger than usual stack size
 // In particular, bmv080_serve_interrupt is the culprit.
