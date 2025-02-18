@@ -134,6 +134,12 @@ sfTkError_t sfDevBMV080::begin(sfTkIBus *theBus)
 }
 
 //---------------------------------------------------------------------
+float sfDevBMV080::PM10()
+{
+    return _sensorValue.pm10_mass_concentration;
+}
+
+//---------------------------------------------------------------------
 float sfDevBMV080::PM25()
 {
     return _sensorValue.pm2_5_mass_concentration;

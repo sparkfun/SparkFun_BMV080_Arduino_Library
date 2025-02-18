@@ -184,6 +184,23 @@ class sfDevBMV080
     bool setMode(uint8_t mode);
 
     /**
+     * @brief Gets the PM10 (particulate matter ≤10 µm) concentration
+     *
+     * This method returns the latest PM10 reading from the sensor's internal cache.
+     * The value represents the mass concentration of particles with a diameter
+     * of 10 micrometers or less.
+     *
+     * @return The PM10 concentration in micrograms per cubic meter (µg/m³)
+     *
+     * @note The PM10 value is updated when readSensor() is called
+     *
+     * @see readSensor()
+     * @see PM1()
+     * @see bmv080_output_t
+     */
+    float PM10(void);
+
+    /**
      * @brief Gets the PM2.5 (particulate matter ≤2.5 µm) concentration
      *
      * This method returns the latest PM2.5 reading from the sensor's internal cache.
