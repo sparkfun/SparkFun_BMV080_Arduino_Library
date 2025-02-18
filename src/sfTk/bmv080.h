@@ -143,12 +143,10 @@ bmv080_status_code_t bmv080_reset(const bmv080_handle_t handle);
 *                                                                                                                    <br> This is applicable to all parameters with the suffix "_logging" in its name.
 * <tr> <td> "pm_logging"                    <td> bool                 <td>           <td> false                      <td> Set if particulate matter output log files are created.
 *                                                                                                                    <br> Disabled if _false_, enabled if _true_.
-* <tr> <td> "volumetric_mass_density"       <td> float                <td> kg / m^3  <td> 1.6                        <td> For internal use only.
 * <tr> <td> "integration_time"              <td> float                <td> s         <td> 10                         <td> Measurement window.
 *                                                                                                                    <br> In duty cycling mode, this measurement window is also the sensor ON time.
 * <tr> <td> "duty_cycling_period"           <td> uint16_t             <td> s         <td> 30                         <td> Duty cycling period (sum of integration time and sensor OFF / sleep time).
 *                                                                                                                    <br> This must be greater than integration time by at least 2 seconds.
-* <tr> <td> "distribution_id"               <td> uint32_t             <td>           <td> 3                          <td> For internal use only.
 * <tr> <td> "do_obstruction_detection"      <td> bool                 <td>           <td> true                       <td> Set if obstruction detection feature is enabled.
 * <tr> <td> "do_vibration_filtering"        <td> bool                 <td>           <td> false                      <td> Set if vibration filter is enabled.
 * <tr> <td> "measurement_algorithm"         <td> bmv080_measurement_algorithm_t <td> <td> E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION (3) <td> Selection of measurement algorithm based on the
@@ -188,12 +186,10 @@ bmv080_status_code_t bmv080_get_parameter(const bmv080_handle_t handle, const ch
 *                                                                                                                    <br> This is applicable to all parameters with the suffix "_logging" in its name.
 * <tr> <td> "pm_logging"                    <td> bool                 <td>           <td> false                      <td> Set if particulate matter output log files are created.
 *                                                                                                                    <br> Disabled if _false_, enabled if _true_.
-* <tr> <td> "volumetric_mass_density"       <td> float                <td> kg / m^3  <td> 1.6                        <td> For internal use only.
 * <tr> <td> "integration_time"              <td> float                <td> s         <td> 10                         <td> Measurement window. 
 *                                                                                                                    <br> In duty cycling mode, this measurement window is also the sensor ON time.
 * <tr> <td> "duty_cycling_period"           <td> uint16_t             <td> s         <td> 30                         <td> Duty cycling period (sum of integration time and sensor OFF / sleep time).
 *                                                                                                                    <br> This must be greater than integration time by at least 2 seconds.
-* <tr> <td> "distribution_id"               <td> uint32_t             <td>           <td> 3                          <td> For internal use only.
 * <tr> <td> "do_obstruction_detection"      <td> bool                 <td>           <td> true                       <td> Set if obstruction detection feature is enabled.
 * <tr> <td> "do_vibration_filtering"        <td> bool                 <td>           <td> false                      <td> Set if vibration filter is enabled.
 * <tr> <td> "measurement_algorithm"         <td> bmv080_measurement_algorithm_t <td> <td> E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION (3) <td> Selection of measurement algorithm based on the 

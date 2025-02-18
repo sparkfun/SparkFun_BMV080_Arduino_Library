@@ -390,6 +390,16 @@ typedef struct
     float pm2_5_mass_concentration;
     /*! pm1_mass_concentration: PM1 value in ug/m3 */
     float pm1_mass_concentration;
+    /*! pm10_mass_concentration: PM10 value in ug/m3 */
+    float pm10_mass_concentration;
+
+    /*! pm2_5_number_concentration: PM2.5 value in particles/cm3 */
+    float pm2_5_number_concentration;
+    /*! pm1_number_concentration: PM1 value in particles/cm3 */
+    float pm1_number_concentration;
+    /*! pm10_number_concentration: PM10 value in particles/cm3 */
+    float pm10_number_concentration;
+    
     /*! is_obstructed: flag to indicate whether the sensor is obstructed and cannot perform a valid measurement */
     bool is_obstructed;
     /*! is_outside_measurement_range: flag to indicate whether the PM2.5 concentration is 
@@ -402,14 +412,6 @@ typedef struct
     float reserved_1;
     /*! reserved_2: for internal use only */
     float reserved_2;
-    /*! reserved_3: for internal use only */
-    float reserved_3; 
-    /*! reserved_4: for internal use only */
-    float reserved_4; 
-    /*! reserved_5: for internal use only */
-    float reserved_5; 
-    /*! reserved_6: for internal use only */
-    float reserved_6;
     /*! extended_info: for internal use only */
     struct bmv080_extended_info_s *extended_info;
 }bmv080_output_t;
