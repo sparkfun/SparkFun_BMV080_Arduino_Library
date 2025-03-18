@@ -68,7 +68,7 @@ void setup()
     // Comment out this while loop, or it will prevent the remaining code from running.
 
     Serial.println();
-    Serial.println("BMV080 Example 1 - Basic Readings");
+    Serial.println("BMV080 Example 6 - Two Sensors");
 
     wirePort.begin();
 
