@@ -115,6 +115,16 @@ class sfDevBMV080
     bool open(void);
 
     /**
+     * @brief Closes communication with the BMV080 sensor
+     *
+     * @return true if the sensor was successfully closed and handle created
+     * @return false if the sensor could not be closed or handle creation failed
+     * 
+     * @see open()
+     */
+    bool close(void);    
+
+    /**
      * @brief Resets the BMV080 sensor to its default state
      *
      * This method performs a soft reset of the sensor, returning all settings

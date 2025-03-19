@@ -254,6 +254,19 @@ bool sfDevBMV080::open()
 }
 
 //---------------------------------------------------------------------
+bool sfDevBMV080::close()
+{
+    if (_theBus == nullptr)
+        return false;
+
+    // Close the device
+
+    bmv080_status_code_t status = bmv080_close(&_bmv080_handle_class);
+
+    return (status == E_BMV080_OK);
+}
+
+//---------------------------------------------------------------------
 bool sfDevBMV080::reset()
 {
     bmv080_status_code_t bmv080_current_status = bmv080_reset(_bmv080_handle_class);
