@@ -134,6 +134,12 @@ sfTkError_t sfDevBMV080::begin(sfTkIBus *theBus)
 }
 
 //---------------------------------------------------------------------
+float sfDevBMV080::PM10()
+{
+    return _sensorValue.pm10_mass_concentration;
+}
+
+//---------------------------------------------------------------------
 float sfDevBMV080::PM25()
 {
     return _sensorValue.pm2_5_mass_concentration;
@@ -243,6 +249,19 @@ bool sfDevBMV080::open()
     bmv080_status_code_t status = bmv080_open(
         &_bmv080_handle_class, (bmv080_sercom_handle_t)_theBus, (bmv080_callback_read_t)device_read_16bit_CB,
         (bmv080_callback_write_t)device_write_16bit_CB, (bmv080_callback_delay_t)device_delay_CB);
+
+    return (status == E_BMV080_OK);
+}
+
+//---------------------------------------------------------------------
+bool sfDevBMV080::close()
+{
+    if (_theBus == nullptr)
+        return false;
+
+    // Close the device
+
+    bmv080_status_code_t status = bmv080_close(&_bmv080_handle_class);
 
     return (status == E_BMV080_OK);
 }

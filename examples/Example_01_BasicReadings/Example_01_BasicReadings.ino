@@ -83,11 +83,17 @@ void loop()
 {
     if (bmv080.readSensor())
     {
+        float pm10 = bmv080.PM10();
         float pm25 = bmv080.PM25();
         float pm1 = bmv080.PM1();
 
+        Serial.print("PM10: ");
+        Serial.print(pm10);
+        Serial.print("\t");
+        Serial.print("PM2.5: ");
         Serial.print(pm25);
         Serial.print("\t");
+        Serial.print("PM1: ");
         Serial.print(pm1);
 
         if (bmv080.isObstructed() == true)

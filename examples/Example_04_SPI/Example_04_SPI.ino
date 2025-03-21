@@ -36,7 +36,7 @@
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 
 SparkFunBMV080SPI bmv080; // Create an instance of the BMV080 class
-#define CS_PIN 15 // Define the chip select pin
+#define CS_PIN 5 // Define the chip select pin
 
 void setup()
 {

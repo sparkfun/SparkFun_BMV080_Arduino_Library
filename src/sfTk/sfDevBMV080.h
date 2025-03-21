@@ -115,6 +115,16 @@ class sfDevBMV080
     bool open(void);
 
     /**
+     * @brief Closes communication with the BMV080 sensor
+     *
+     * @return true if the sensor was successfully closed and handle created
+     * @return false if the sensor could not be closed or handle creation failed
+     * 
+     * @see open()
+     */
+    bool close(void);    
+
+    /**
      * @brief Resets the BMV080 sensor to its default state
      *
      * This method performs a soft reset of the sensor, returning all settings
@@ -182,6 +192,23 @@ class sfDevBMV080
      * @see bmv080_output_t
      */
     bool setMode(uint8_t mode);
+
+    /**
+     * @brief Gets the PM10 (particulate matter ≤10 µm) concentration
+     *
+     * This method returns the latest PM10 reading from the sensor's internal cache.
+     * The value represents the mass concentration of particles with a diameter
+     * of 10 micrometers or less.
+     *
+     * @return The PM10 concentration in micrograms per cubic meter (µg/m³)
+     *
+     * @note The PM10 value is updated when readSensor() is called
+     *
+     * @see readSensor()
+     * @see PM1()
+     * @see bmv080_output_t
+     */
+    float PM10(void);
 
     /**
      * @brief Gets the PM2.5 (particulate matter ≤2.5 µm) concentration
