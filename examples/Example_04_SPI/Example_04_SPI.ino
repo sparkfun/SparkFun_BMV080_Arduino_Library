@@ -29,15 +29,14 @@
   Serial.print it out at 115200 baud to serial monitor.
 
   Feel like supporting our work? Buy a board from SparkFun!
-  https://www.sparkfun.com/products/?????
+  https://www.sparkfun.com/products/26554
 */
 
 #include <Wire.h>
 #include "SparkFun_BMV080_Arduino_Library.h" // CTRL+Click here to get the library: http://librarymanager/All#SparkFun_BMV080
 
-Bmv080 bmv080; // Create an instance of the BMV080 class
-
-spi_device_t spi_device = {}; // SPI device struct instance for Bosch API
+SparkFunBMV080SPI bmv080; // Create an instance of the BMV080 class
+#define CS_PIN 5 // Define the chip select pin
 
 void setup()
 {
@@ -48,21 +47,28 @@ void setup()
     // For a final version of a project that does not need serial debug (or a USB cable plugged in),
     // Comment out this while loop, or it will prevent the remaining code from running.
 
+    pinMode(CS_PIN, OUTPUT);
+    pinMode(MOSI, OUTPUT);
+    pinMode(SCK, OUTPUT);
+    pinMode(MISO, INPUT);
+    digitalWrite(CS_PIN, HIGH);
+
     Serial.println();
     Serial.println("BMV080 Example 4 - SPI");
 
-    /* Communication interface initialization */
-    spi_init(&spi_device);
-
-    if (bmv080.initSPI(&spi_device) == false) {
+    if (bmv080.begin(CS_PIN, SPI) == false) {
         Serial.println("SPI init failure. Check your jumpers and the hookup guide. Freezing...");
         while (1)
         ;
     }
     Serial.println("BMV080 SPI init successful");
 
+
+    /* Initialize the Sensor (read driver, open, reset, id etc.)*/
+    bmv080.init();
+
     /* Set the sensor mode to continuous mode */
-    if(bmv080.setMode(SFE_BMV080_MODE_CONTINUOUS) == true)
+    if(bmv080.setMode(SF_BMV080_MODE_CONTINUOUS) == true)
     {
         Serial.println("BMV080 set to continuous mode");
     }
@@ -74,13 +80,13 @@ void setup()
 
 void loop()
 {
-    if(bmv080.dataAvailable())
+    if(bmv080.readSensor())
     {
-        float pm25 = bmv080.getPM25();
+        float pm25 = bmv080.PM25();
 
         Serial.print(pm25);
 
-        if(bmv080.getIsObstructed() == true)
+        if(bmv080.isObstructed() == true)
         {
             Serial.print("\tObstructed");
         }
