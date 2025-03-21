@@ -198,7 +198,7 @@ bool sfDevBMV080::setMode(uint8_t mode)
     {
         bmv080_duty_cycling_mode_t duty_cycling_mode = E_BMV080_DUTY_CYCLING_MODE_0;
         bmv080_current_status = bmv080_start_duty_cycling_measurement(
-            _bmv080_handle_class, (bmv080_callback_tick_t)sftk_ticks_ms(), duty_cycling_mode);
+            _bmv080_handle_class, (bmv080_callback_tick_t)sftk_ticks_ms, duty_cycling_mode);
     }
 
     // check if the mode was set correctly
