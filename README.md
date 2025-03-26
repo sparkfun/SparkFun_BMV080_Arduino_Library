@@ -2,7 +2,7 @@
 
 # SparkFun Air Quality PM1/PM2.5/PM10 Sensor - BMV080 (Qwiic)
 
-Arduino Library for the SSparkFun Air Quality PM1/PM2.5/PM10 Sensor - BMV080
+Arduino Library for the SparkFun Air Quality PM1/PM2.5/PM10 Sensor - BMV080
 
 ![License](https://img.shields.io/github/license/sparkfun/SparkFun_BMV080_Arduino_Library)
 ![Release](https://img.shields.io/github/v/release/sparkfun/SparkFun_BMV080_Arduino_Library)
