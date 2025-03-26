@@ -106,7 +106,7 @@ jobs:
             arduino-cli lib install 'SparkFun Toolkit'
 
       - name: Compile Sketch
-        run: arduino-cli compile --fqbn ${{ matrix.board.fqbn }} examples/Example01_BasicReadings --library .
+        run: arduino-cli compile --fqbn ${{ matrix.board.fqbn }} examples/Example_01_BasicReadings --library .
         
     # outputs:
     #   report-artifact-name: ${{ steps.report-artifact-name.outputs.report-artifact-name }}
