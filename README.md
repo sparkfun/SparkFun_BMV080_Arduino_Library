@@ -19,6 +19,16 @@ The breakout board comes with the BMV080 populated and takes advantage of its fl
 > To use this library, the Bosch BMV080 SDK must be downloaded from Bosch, and some files copied over into this library once it's installed. Details of this are outlined below [here](#install-the-bosch-sdk).
 >
 > If the SDK files are not copied into this library, this library will fail to build.
+> 
+> This library has been verified with the following versions:
+> SparkFun_BMV_Arduino_Library v1.0.1
+> Bosch BMV080 SDK v11.0.0
+> Arduino IDE 2.3.5
+>
+> Architectures Supported/Verified:
+> esp32 ([SparkFun Thing Plus - ESP32 WROOM (USB-C)](https://www.sparkfun.com/sparkfun-thing-plus-esp32-wroom-usb-c.html))
+> esp32s2 ([SparkFun Thing Plus - ESP32-S2 WROOM](https://www.sparkfun.com/sparkfun-thing-plus-esp32-s2-wroom.html))
+> m33f ([SparkFun Thing Plus - RA6M5](https://www.sparkfun.com/sparkfun-thing-plus-ra6m5.html))
 
 ## Functionality
 
