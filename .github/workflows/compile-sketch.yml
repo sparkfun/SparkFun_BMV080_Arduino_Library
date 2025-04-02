@@ -1,9 +1,6 @@
 name: Cross-compilation test
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 
