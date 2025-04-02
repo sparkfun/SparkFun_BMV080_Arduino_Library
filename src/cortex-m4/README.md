@@ -7,8 +7,8 @@ Using a shell:
 Where BOSCH_SDK = *The install directory of the downloaded Bosch SDK*
 
 ```sh
-cp $BOSCH_SDK/arm_cortex_m4/arm_none_eabi_gcc/release/lib_bmv080.a   libbmv080.a
-cp $BOSCH_SDK/arm_cortex_m4/arm_none_eabi_gcc/release/lib_postProcessor.a   libpostProcessor.a
+cp $BOSCH_SDK/arm_cortex_m4/arm_none_eabi_gcc/release/lib_bmv080.a   lib_bmv080.a
+cp $BOSCH_SDK/arm_cortex_m4/arm_none_eabi_gcc/release/lib_postProcessor.a   lib_postProcessor.a
 ```
 
 Or just drag and drop via a GUI interface.

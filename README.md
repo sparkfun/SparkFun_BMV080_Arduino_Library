@@ -15,6 +15,11 @@ The [SparkFun Air Quality PM1/PM2.5/PM10 Sensor - BMV080 (Qwiic)](https://www.sp
 
 The breakout board comes with the BMV080 populated and takes advantage of its flexible cable with the FPC 13-pin 0.33mm connector. On the back of the board is a horizontal Qwiic connector to reduce the amount of soldering on the board. However, the board still breaks out 0.1"-spaced pins for users who prefer a soldered connection or prototyping the pins on a breadboard. The breakout also includes four jumper selectable I2C addresses if you happen to connect more than one BMV080 on the same I2C port. While the breakout was designed for I2C by default, you can also configure the board's jumper to communicate over SPI as well. A special lens allows the laser to pass through the enclosure to take measurements.
 
+> [!NOTE]
+> To use this library, the Bosch BMV080 SDK must be downloaded from Bosch, and some files copyied over into this library once it's installed. Details of this are outlined below [here](#install-the-bosch-sdk).
+>
+> If the SDK files are not copied into this library, this library will fail to build.
+
 ## Functionality
 
 The Air Quality PM1/PM2.5/PM10 Sensor - BMV080  can run as an I2C client device, or as a SPI client device. Once connected, the library allows the collaction of PM1, PM2.5 and PM10 readings as well as if the sensor is obstructed.
@@ -35,6 +40,56 @@ The library enables setting a variety of sensor settings, properties and operati
 |[Full Documentation](https://docs.sparkfun.com/SparkFun_BMV080_Arduino_Library/)| The full documentation and API for this Arduino library|
 |[SparkFun Air Quality PM1/PM2.5/PM10 Sensor - BMV080](https://github.com/sparkfun/SparkFun_Particulate_Matter_Sensor_Breakout_BMV080)| Hardware GitHub Repository|
 |[Hook Up Guide](https://docs.sparkfun.com/SparkFun_Particulate_Matter_Sensor_Breakout_BMV080) | Hardware Overview and Quick Start for the Air Quality Sensor - BMV080 |
+
+## Install the Bosch SDK
+
+To use this library with SparkFun BMV080 Air Quality Sensor, the Bosch SKD for the BMV080 must be installed and files copied into the correct locations within this library.
+
+The following outlines how to install the library.
+
+### Intall this library
+
+Using the Arduino Library Manager, install this library.
+
+![Install Library](docs/images/sdk-arduino-install.png)
+
+## Download the Bosch BMV080 SDK
+
+The SDK is avilable [on this page](https://www.bosch-sensortec.com/products/environmental-sensors/particulate-matter-sensor/bmv080/#documents). Select the 'Download the SDK for BMV080` link/button.
+
+Once downloaded, unzip the file.
+
+## Copy Files
+
+Files from the SDK must be copied into the isntallation of this library. This library is installed in the following locations:
+
+| OS | Directory|
+|---|---|
+|macOS | $HOME/Documents/Arduino/libraries/SparkFun_BMV080_Arduino_Library|
+|Windows | $HOME\Documents\Arduino\libraries\SparkFun_BMV080_Arduino_Library|
+|Linux| $HOME/Arduino/libraries/SparkFun_BMV080_Arduino_Library|
+
+From the Bosch SDK, the following files are copied into the specified library locations.
+
+|Bosch SDK File | SparkFun BMV080 Arduino Library Directory|
+|--|--|
+|api/inc/bmv080.h| src/sfTk/bmv080.h|
+|api/inc/bmv080_defs.h| src/sfTk/bmv080_defs.h|
+|api/api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_bmv080.a | src/esp32/lib_bmv080.a|
+|api/api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_postProcessor.a | src/esp32/lib_postProcessor.a|
+|api/api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_bmv080.a | src/esp32/lib_bmv080.a|
+|api/api/lib/xtensa_esp32s2/xtensa_esp32s2_elf_gcc/release/lib_postProcessor.a | src/esp32s2/lib_postProcessor.a|
+|api/api/lib/xtensa_esp32s2/xtensa_esp32s2_elf_gcc/release/lib_bmv080.a | src/esp32s2/lib_bmv080.a|
+|api/api/lib/arm_cortex_m0plus/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m0plus/lib_postProcessor.a|
+|api/api/lib/arm_cortex_m0plus/arm_none_eabi_gcc/release/lib_bmv080.a | src/cortex-m0plus/lib_bmv080.a|
+|api/api/lib/arm_cortex_m33f/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m33/lib_postProcessor.a|
+|api/api/lib/arm_cortex_m33f/arm_none_eabi_gcc/release/lib_bmv080.a | src/cortex-m33/lib_bmv080.a|
+|api/api/lib/arm_cortex_m4/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m4/lib_postProcessor.a|
+|api/api/lib/arm_cortex_m4/arm_none_eabi_gcc/release/lib_bmv080.a | src/cortex-m4/lib_bmv080.a|
+|api/api/lib/arm_cortex_m4f/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m4f/lib_postProcessor.a|
+|api/api/lib/arm_cortex_m4f/arm_none_eabi_gcc/release/lib_bmv080.a | src/cortex-m4f/lib_bmv080.a|
+
+One the files are copied into place, this library is available for use.
 
 ## Examples
 
