@@ -77,7 +77,7 @@ Once downloaded, unzip the file.
 
 ## Copy Files
 
-Files from the SDK must be copied into the isntallation of this library. This, the SparkFun BMV080 Arduino library is installed in the following locations:
+Files from the SDK must be copied into the installation of this library. This, the SparkFun BMV080 Arduino library is installed in the following locations:
 
 ### Library Install Directory
 
@@ -97,7 +97,6 @@ From the Bosch SDK, the following files are copied into the specified library lo
 |api/inc/bmv080_defs.h| src/sfTk/bmv080_defs.h|
 |api/api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_bmv080.a | src/esp32/lib_bmv080.a|
 |api/api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_postProcessor.a | src/esp32/lib_postProcessor.a|
-|api/api/lib/xtensa_esp32/xtensa_esp32_elf_gcc/release/lib_bmv080.a | src/esp32/lib_bmv080.a|
 |api/api/lib/xtensa_esp32s2/xtensa_esp32s2_elf_gcc/release/lib_postProcessor.a | src/esp32s2/lib_postProcessor.a|
 |api/api/lib/xtensa_esp32s2/xtensa_esp32s2_elf_gcc/release/lib_bmv080.a | src/esp32s2/lib_bmv080.a|
 |api/api/lib/arm_cortex_m0plus/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m0plus/lib_postProcessor.a|
@@ -109,7 +108,7 @@ From the Bosch SDK, the following files are copied into the specified library lo
 |api/api/lib/arm_cortex_m4f/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m4f/lib_postProcessor.a|
 |api/api/lib/arm_cortex_m4f/arm_none_eabi_gcc/release/lib_bmv080.a | src/cortex-m4f/lib_bmv080.a|
 
-One the files are copied into place, this library is available for use.
+Once the files are copied into place, this library is available for use.
 
 ## License Information
 
