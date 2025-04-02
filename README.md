@@ -41,6 +41,22 @@ The library enables setting a variety of sensor settings, properties and operati
 |[SparkFun Air Quality PM1/PM2.5/PM10 Sensor - BMV080](https://github.com/sparkfun/SparkFun_Particulate_Matter_Sensor_Breakout_BMV080)| Hardware GitHub Repository|
 |[Hook Up Guide](https://docs.sparkfun.com/SparkFun_Particulate_Matter_Sensor_Breakout_BMV080) | Hardware Overview and Quick Start for the Air Quality Sensor - BMV080 |
 
+## Examples
+
+The following examples are provided with the library
+
+| Example | Description |
+|---|---|
+|[Basic Readings](examples/Example_01_BasicReadings/Example_01_BasicReadings.ino)| The sensor is initialized, and the values for PM1, PM2.5 and PM10 are output to the console.|
+|[Duty Cycle](examples/Example_02_DutyCycle/Example_02_DutyCycle.ino)| The sensor is placed in a 20 second Duty Cycle mode - with PM 2.5 values read and output every 20 seconds|
+|[Interruput](examples/Example_03_Interrupt/Example_03_Interrupt.ino)|Readings are driven by a sensor Interrupt|
+|[SPI](examples/Example_04_SPI/Example_04_SPI.ino)|The sensor is connected to using an SPI connection|
+|[Set/Get Parameters](examples/Example_05_Parameters/Example_05_Parameters.ino)|Shows how to set and get sensor prameters using the library|
+|[Two Sensors](examples/Example_06_TwoSensors/Example_06_TwoSensors.ino)|Shows how two sensors can operate using the same system|
+|[Demo Alphanumeric](examples/Example_07_Demo_Alphanumeric/Example_07_Demo_Alphanumeric.ino)|A demo script that outputs sensed data to an Alpha Numeric display|
+|[Demo - OLED](examples/Example_08_Demo_Oled/Example_08_Demo_Oled.ino)| Demo that outputs sensor information to a connected OLED display|
+|[Open - Close](examples/Example_09_OpenClose/Example_09_OpenClose.ino)|Shows how to open the sensor, take a set of readings and then close the sensor|
+
 ## Install the Bosch SDK
 
 To use this library with SparkFun BMV080 Air Quality Sensor, the Bosch SDK for the BMV080 must be installed and files copied into the correct locations within this library.
@@ -94,22 +110,6 @@ From the Bosch SDK, the following files are copied into the specified library lo
 |api/api/lib/arm_cortex_m4f/arm_none_eabi_gcc/release/lib_bmv080.a | src/cortex-m4f/lib_bmv080.a|
 
 One the files are copied into place, this library is available for use.
-
-## Examples
-
-The following examples are provided with the library
-
-| Example | Description |
-|---|---|
-|[Basic Readings](examples/Example_01_BasicReadings/Example_01_BasicReadings.ino)| The sensor is initialized, and the values for PM1, PM2.5 and PM10 are output to the console.|
-|[Duty Cycle](examples/Example_02_DutyCycle/Example_02_DutyCycle.ino)| The sensor is placed in a 20 second Duty Cycle mode - with PM 2.5 values read and output every 20 seconds|
-|[Interruput](examples/Example_03_Interrupt/Example_03_Interrupt.ino)|Readings are driven by a sensor Interrupt|
-|[SPI](examples/Example_04_SPI/Example_04_SPI.ino)|The sensor is connected to using an SPI connection|
-|[Set/Get Parameters](examples/Example_05_Parameters/Example_05_Parameters.ino)|Shows how to set and get sensor prameters using the library|
-|[Two Sensors](examples/Example_06_TwoSensors/Example_06_TwoSensors.ino)|Shows how two sensors can operate using the same system|
-|[Demo Alphanumeric](examples/Example_07_Demo_Alphanumeric/Example_07_Demo_Alphanumeric.ino)|A demo script that outputs sensed data to an Alpha Numeric display|
-|[Demo - OLED](examples/Example_08_Demo_Oled/Example_08_Demo_Oled.ino)| Demo that outputs sensor information to a connected OLED display|
-|[Open - Close](examples/Example_09_OpenClose/Example_09_OpenClose.ino)|Shows how to open the sensor, take a set of readings and then close the sensor|
 
 ## License Information
 
