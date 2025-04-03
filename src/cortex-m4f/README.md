@@ -1,6 +1,6 @@
 # Install the BOSCH BMV080 SDK library files for this folder
 
-### From the Bosch BMV080 SDK, copy the following files to this folder and rename them
+### From the Bosch BMV080 SDK, copy the following files to this folder.
 
 Using a shell:
 
