@@ -18,8 +18,14 @@
 
 #pragma once
 
+#if __has_include("bmv080.h")
 #include "bmv080.h"
 #include "bmv080_defs.h"
+#else
+#error                                                                                                                 \
+    "BOSCH BMV080 SDK Must be installed.  See instructions at www.github.com/sparkfun/SparkFun_BMV080_Arduino_Library - ERROR: bmv080.h not found"
+
+#endif
 
 // Include the platform independent layer of the SparkFun Toolkit
 #include <sfTk/sfTkIBus.h>
@@ -119,10 +125,10 @@ class sfDevBMV080
      *
      * @return true if the sensor was successfully closed and handle created
      * @return false if the sensor could not be closed or handle creation failed
-     * 
+     *
      * @see open()
      */
-    bool close(void);    
+    bool close(void);
 
     /**
      * @brief Resets the BMV080 sensor to its default state

@@ -16,8 +16,15 @@
  * @see sfDevBMV080.h
  */
 
+#if __has_include("bmv080.h")
 #include "bmv080.h"
 #include "bmv080_defs.h"
+#else
+#error                                                                                                                 \
+    "BOSCH BMV080 SDK Must be installed.  See instructions at www.github.com/sparkfun/SparkFun_BMV080_Arduino_Library - ERROR: bmv080.h not found"
+
+#endif
+
 #include "sfDevBMV080.h"
 
 // need our bus I2C type for some I2C specific features
