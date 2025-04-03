@@ -87,7 +87,7 @@ Once downloaded, unzip the file.
 
 ## Copy Files
 
-Files from the SDK must be copied into the installation of this library. This, the SparkFun BMV080 Arduino library is installed in the following locations:
+Files from the SDK must be copied into the installation of this library. This, the SparkFun BMV080 Arduino library, is installed in the following locations:
 
 ### Library Install Directory
 
