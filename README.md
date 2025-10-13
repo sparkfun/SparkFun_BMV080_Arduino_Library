@@ -32,7 +32,7 @@ The breakout board comes with the BMV080 populated and takes advantage of its fl
 > m33 (example: [SparkFun RedBoard IoT - RP2350](https://www.sparkfun.com/sparkfun-iot-redboard-rp2350.html))
 
 > [!TIP]
-> The release of the Bosch SDK v11.2.0 on July 12th, 2025 added support for the RP2350 processor (m33).
+> The release of the Bosch SDK v11.2.0 on July 12th, 2025 added support for the RP2350 processor (m33) and the ESP32-C6 processor (riscv_rv32imc)
 
 ## Functionality
 
@@ -115,6 +115,8 @@ From the Bosch SDK, the following files are copied into the specified library lo
 |api/api/lib/xtensa_esp32s2/xtensa_esp32s2_elf_gcc/release/lib_bmv080.a | src/esp32s2/lib_bmv080.a|
 |api/api/lib/xtensa_esp32s3/xtensa_esp32s3_elf_gcc/release/lib_postProcessor.a | src/esp32s3/lib_postProcessor.a|
 |api/api/lib/xtensa_esp32s3/xtensa_esp32s3_elf_gcc/release/lib_bmv080.a | src/esp32s3/lib_bmv080.a|
+|api/api/lib/riscv_rv32imc/riscv_none_elf_gcc/release/lib_postProcessor.a | src/esp32c6/lib_postProcessor.a|
+|api/api/lib/riscv_rv32imc/riscv_none_elf_gcc/release/lib_bmv080.a | src/esp32c6/lib_bmv080.a|
 |api/api/lib/arm_cortex_m0plus/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m0plus/lib_postProcessor.a|
 |api/api/lib/arm_cortex_m0plus/arm_none_eabi_gcc/release/lib_bmv080.a | src/cortex-m0plus/lib_bmv080.a|
 |api/api/lib/arm_cortex_m33/xarm_none_eabi_gcc/release/lib_postProcessor.a | src/cortex-m33/lib_postProcessor.a|
