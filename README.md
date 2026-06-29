@@ -26,10 +26,10 @@ This library has been verified with the following versions:
 - Arduino IDE 2.3.5
 
 Architectures Supported/Verified:
-- esp32 (example: [SparkFun Thing Plus - ESP32 WROOM (USB-C)](https://www.sparkfun.com/sparkfun-thing-plus-esp32-wroom-usb-c.html))
-- esp32s2 (example: [SparkFun Thing Plus - ESP32-S2 WROOM](https://www.sparkfun.com/sparkfun-thing-plus-esp32-s2-wroom.html))
-- m33f (example: [SparkFun Thing Plus - RA6M5](https://www.sparkfun.com/sparkfun-thing-plus-ra6m5.html))
-- m33 (example: [SparkFun RedBoard IoT - RP2350](https://www.sparkfun.com/sparkfun-iot-redboard-rp2350.html))
+- esp32 (example: [SparkFun Thing Plus - ESP32 WROOM (USB-C)](https://www.sparkfun.com/sparkfun-thing-plus-esp32-wroom-usb-c.html)
+- esp32s2 (example: [SparkFun Thing Plus - ESP32-S2 WROOM](https://www.sparkfun.com/sparkfun-thing-plus-esp32-s2-wroom.html)
+- m33f (example: [SparkFun Thing Plus - RA6M5](https://www.sparkfun.com/sparkfun-thing-plus-ra6m5.html)
+- m33 (example: [SparkFun RedBoard IoT - RP2350](https://www.sparkfun.com/sparkfun-iot-redboard-rp2350.html)
 
 **TIP**
 The release of the Bosch SDK v11.2.0 on July 12th, 2025 added support for the RP2350 processor (m33) and the ESP32-C6 processor (riscv_rv32imc)
