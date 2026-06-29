@@ -15,7 +15,7 @@ The [SparkFun Air Quality PM1/PM2.5/PM10 Sensor - BMV080 (Qwiic)](https://www.sp
 
 The breakout board comes with the BMV080 populated and takes advantage of its flexible cable with the FPC 13-pin 0.33mm connector. On the back of the board is a horizontal Qwiic connector to reduce the amount of soldering on the board. However, the board still breaks out 0.1"-spaced pins for users who prefer a soldered connection or prototyping the pins on a breadboard. The breakout also includes four jumper selectable I2C addresses if you happen to connect more than one BMV080 on the same I2C port. While the breakout was designed for I2C by default, you can also configure the board's jumper to communicate over SPI as well. A special lens allows the laser to pass through the enclosure to take measurements.
 
-> [!NOTE]
+> **NOTE**
 > To use this library, the Bosch BMV080 SDK must be downloaded from Bosch, and some files copied over into this library once it's installed. Details of this are outlined below [here](#install-the-bosch-sdk).
 >
 > If the SDK files are not copied into this library, this library will fail to build.
@@ -31,7 +31,7 @@ The breakout board comes with the BMV080 populated and takes advantage of its fl
 > m33f (example: [SparkFun Thing Plus - RA6M5](https://www.sparkfun.com/sparkfun-thing-plus-ra6m5.html))
 > m33 (example: [SparkFun RedBoard IoT - RP2350](https://www.sparkfun.com/sparkfun-iot-redboard-rp2350.html))
 
-> [!TIP]
+> **TIP**
 > The release of the Bosch SDK v11.2.0 on July 12th, 2025 added support for the RP2350 processor (m33) and the ESP32-C6 processor (riscv_rv32imc)
 
 ## Functionality
